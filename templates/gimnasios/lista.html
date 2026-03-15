@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Gimnasios{% endblock %}
+
+{% block content %}
+<h1>Gimnasios</h1>
+
+<form method="GET">
+    <input type="text" name="nombre" placeholder="Nombre" value="{{ request.GET.nombre }}">
+    <input type="text" name="provincia" placeholder="Provincia" value="{{ request.GET.provincia }}">
+    <input type="text" name="localidad" placeholder="Localidad" value="{{ request.GET.localidad }}">
+
+    <select name="tipo">
+        <option value="">-- Tipo de gimnasio --</option>
+        {% for t in tipos %}
+            <option value="{{ t.id }}" {% if request.GET.tipo == t.id|stringformat:"s" %}selected{% endif %}>
+                {{ t.nombre }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Filtrar</button>
+</form>
+
+<ul>
+    {% for g in gimnasios %}
+        <li>
+            <a href="{% url 'detalle_gimnasio' g.id %}">
+                {{ g.nombre }} - {{ g.localidad }} ({{ g.provincia }})
+            </a>
+        </li>
+    {% empty %}
+        <li>No hay gimnasios que coincidan con la búsqueda.</li>
+    {% endfor %}
+</ul>
+
+
+{% endblock %}

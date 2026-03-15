@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}{{ gimnasio.nombre }}{% endblock %}
+
+{% block content %}
+<h1>{{ gimnasio.nombre }}</h1>
+
+<p><strong>Provincia:</strong> {{ gimnasio.provincia }}</p>
+<p><strong>Localidad:</strong> {{ gimnasio.localidad }}</p>
+<p><strong>Teléfono:</strong> {{ gimnasio.telefono }}</p>
+<p><strong>Email:</strong> {{ gimnasio.email }}</p>
+<p><strong>Tipo:</strong> {{ gimnasio.tipo_gimnasio }}</p>
+
+<a href="{% url 'lista_gimnasios' %}">Volver</a>
+{% endblock %}
