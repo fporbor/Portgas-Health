@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Entrar — Portgas Health{% endblock %}
+{% block content %}
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <h1 class="auth-title">ENTRAR</h1>
+    <p class="auth-sub">Bienvenido de nuevo</p>
+
+    <form method="POST">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="field-group">
+          <label>{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <span class="field-error">{{ field.errors|join:", " }}</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn--primary btn--full">Entrar</button>
+    </form>
+
+    <p class="auth-footer">
+      ¿No tienes cuenta? <a href="/registro/">Regístrate</a>
+    </p>
+  </div>
+</div>
+
+{% endblock %}
