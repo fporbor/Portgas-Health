@@ -25,7 +25,7 @@
 <ul>
     {% for g in gimnasios %}
         <li>
-            <a href="{% url 'detalle_gimnasio' g.id %}">
+            <a href="{% url 'gimnasios:detalle_gimnasio' g.id %}">
                 {{ g.nombre }} - {{ g.localidad }} ({{ g.provincia }})
             </a>
         </li>

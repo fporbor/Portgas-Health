@@ -7,12 +7,13 @@ Portgas Health es un proyecto desarrollado con **Django**, orientado a la gesti�
 ## 📁 Estructura del proyecto
 
 Portgas-Health/
-├── ejercicio/        # App para gestión de ejercicios
-├── gimnasio/         # App para gestión del gimnasio y sus recursos
-├── receta/           # App para recetas o planes personalizados
-├── portgas_health/   # Configuración principal del proyecto Django
-├── manage.py         # Script principal de administración
-└── README.md         # Documentación del proyecto
+├── ejercicios/        # App para gestión de ejercicios
+├── gimnasios/         # App para gestión del gimnasio y sus recursos
+├── recetas/           # App para recetas o planes personalizados
+├── usuarios/          # App para manejar los usuarios
+├── portgas_health/    # Configuración principal del proyecto Django
+├── manage.py          # Script principal de administración
+└── README.md          # Documentación del proyecto
 
 ### 🧩 Apps incluidas
 
@@ -37,5 +38,5 @@ Portgas-Health/
 
 **Linux / macOS**
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv .env
+source .env/bin/activate
