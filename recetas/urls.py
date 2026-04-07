@@ -1,0 +1,12 @@
+from django.urls import path
+from . import views
+
+app_name = 'recetas'
+
+urlpatterns = [
+    path('', views.lista_recetas, name='lista'),
+    path('<int:pk>/', views.detalle_receta, name='detalle'),
+    path('crear/', views.crear_receta, name='crear'),
+    path('<int:pk>/editar/', views.editar_receta, name='editar'),
+    path('<int:pk>/eliminar/', views.eliminar_receta, name='eliminar'),
+]

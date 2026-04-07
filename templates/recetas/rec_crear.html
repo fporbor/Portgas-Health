@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h4 class="mb-0">{{ accion }} receta</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.nombre.id_for_label }}" class="form-label fw-semibold">Nombre</label>
+                        {{ form.nombre }}
+                        {% if form.nombre.errors %}<div class="text-danger small">{{ form.nombre.errors }}</div>{% endif %}
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="{{ form.calorias.id_for_label }}" class="form-label fw-semibold">Calorías (kcal)</label>
+                            {{ form.calorias }}
+                            {% if form.calorias.errors %}<div class="text-danger small">{{ form.calorias.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col">
+                            <label for="{{ form.proteina.id_for_label }}" class="form-label fw-semibold">Proteína (g)</label>
+                            {{ form.proteina }}
+                            {% if form.proteina.errors %}<div class="text-danger small">{{ form.proteina.errors }}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.objetivo.id_for_label }}" class="form-label fw-semibold">Objetivo</label>
+                        {{ form.objetivo }}
+                        {% if form.objetivo.errors %}<div class="text-danger small">{{ form.objetivo.errors }}</div>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Alergias</label>
+                        <div class="border rounded p-3">
+                            {{ form.alergia }}
+                        </div>
+                        {% if form.alergia.errors %}<div class="text-danger small">{{ form.alergia.errors }}</div>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-semibold">Descripción</label>
+                        {{ form.descripcion }}
+                        {% if form.descripcion.errors %}<div class="text-danger small">{{ form.descripcion.errors }}</div>{% endif %}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">{{ accion }}</button>
+                        {% if receta %}
+                            <a href="{% url 'recetas:detalle' receta.pk %}" class="btn btn-outline-secondary">Cancelar</a>
+                        {% else %}
+                            <a href="{% url 'recetas:lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

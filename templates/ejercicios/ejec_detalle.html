@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title">{{ ejercicio.nombre }}</h2>
+
+                <dl class="row mt-3">
+                    <dt class="col-sm-4">Tipo de ejercicio</dt>
+                    <dd class="col-sm-8">{{ ejercicio.tipo_ejercicio|default:"—" }}</dd>
+
+                    <dt class="col-sm-4">Grupos musculares</dt>
+                    <dd class="col-sm-8">
+                        {% for grupo in ejercicio.grupo_muscular.all %}
+                            <span class="badge bg-info text-dark">{{ grupo }}</span>
+                        {% empty %}
+                            —
+                        {% endfor %}
+                    </dd>
+
+                    <dt class="col-sm-4">Descripción</dt>
+                    <dd class="col-sm-8">{{ ejercicio.descripcion|default:"—" }}</dd>
+
+                    <dt class="col-sm-4">Autor</dt>
+                    <dd class="col-sm-8">{{ ejercicio.autor|default:"—" }}</dd>
+                </dl>
+            </div>
+
+            <div class="card-footer bg-transparent d-flex gap-2">
+                <a href="{% url 'ejercicios:lista' %}" class="btn btn-outline-secondary">← Volver</a>
+                {% if user == ejercicio.autor %}
+                    <a href="{% url 'ejercicios:editar' ejercicio.pk %}" class="btn btn-warning">Editar</a>
+                    <a href="{% url 'ejercicios:eliminar' ejercicio.pk %}" class="btn btn-danger">Eliminar</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

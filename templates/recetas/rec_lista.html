@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Recetas</h2>
+    {% if user.is_authenticated %}
+        <a href="{% url 'recetas:crear' %}" class="btn btn-primary">+ Nueva receta</a>
+    {% endif %}
+</div>
+
+{% if recetas %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for receta in recetas %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ receta.nombre }}</h5>
+                        {% if receta.objetivo %}
+                            <span class="badge bg-success mb-2">{{ receta.objetivo }}</span>
+                        {% endif %}
+                        <div class="d-flex gap-3 my-2 text-muted small">
+                            <span>🔥 {{ receta.calorias }} kcal</span>
+                            <span>💪 {{ receta.proteina }}g proteína</span>
+                        </div>
+                        <div class="mb-2">
+                            {% for alergia in receta.alergia.all %}
+                                <span class="badge bg-warning text-dark">{{ alergia }}</span>
+                            {% endfor %}
+                        </div>
+                        {% if receta.descripcion %}
+                            <p class="card-text text-muted small">{{ receta.descripcion|truncatewords:15 }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{% url 'recetas:detalle' receta.pk %}" class="btn btn-outline-primary btn-sm">Ver detalle</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-muted">No hay recetas disponibles todavía.</p>
+{% endif %}
+{% endblock %}

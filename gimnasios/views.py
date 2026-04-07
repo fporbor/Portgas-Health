@@ -3,7 +3,7 @@ from .models import Gimnasio
 
 class GimnasioListView(ListView):
     model = Gimnasio
-    template_name = "gimnasios/lista.html"
+    template_name = "gimnasios/gym_lista.html"
     context_object_name = "gimnasios"
 
     def get_queryset(self):
@@ -31,5 +31,5 @@ class GimnasioListView(ListView):
 
 class GimnasioDetailView(DetailView):
     model = Gimnasio
-    template_name = "gimnasios/detalle.html"
+    template_name = "gimnasios/gym_detalle.html"
     context_object_name = "gimnasio"

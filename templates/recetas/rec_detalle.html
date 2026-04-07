@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title">{{ receta.nombre }}</h2>
+
+                <dl class="row mt-3">
+                    <dt class="col-sm-4">Objetivo</dt>
+                    <dd class="col-sm-8">{{ receta.objetivo|default:"—" }}</dd>
+
+                    <dt class="col-sm-4">Calorías</dt>
+                    <dd class="col-sm-8">{{ receta.calorias }} kcal</dd>
+
+                    <dt class="col-sm-4">Proteína</dt>
+                    <dd class="col-sm-8">{{ receta.proteina }} g</dd>
+
+                    <dt class="col-sm-4">Alergias</dt>
+                    <dd class="col-sm-8">
+                        {% for alergia in receta.alergia.all %}
+                            <span class="badge bg-warning text-dark">{{ alergia }}</span>
+                        {% empty %}
+                            —
+                        {% endfor %}
+                    </dd>
+
+                    <dt class="col-sm-4">Descripción</dt>
+                    <dd class="col-sm-8">{{ receta.descripcion|default:"—" }}</dd>
+
+                    <dt class="col-sm-4">Autor</dt>
+                    <dd class="col-sm-8">{{ receta.autor|default:"—" }}</dd>
+                </dl>
+            </div>
+
+            <div class="card-footer bg-transparent d-flex gap-2">
+                <a href="{% url 'recetas:lista' %}" class="btn btn-outline-secondary">← Volver</a>
+                {% if user == receta.autor %}
+                    <a href="{% url 'recetas:editar' receta.pk %}" class="btn btn-warning">Editar</a>
+                    <a href="{% url 'recetas:eliminar' receta.pk %}" class="btn btn-danger">Eliminar</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

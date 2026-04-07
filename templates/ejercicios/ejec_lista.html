@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Ejercicios</h2>
+    {% if user.is_authenticated %}
+        <a href="{% url 'ejercicios:crear' %}" class="btn btn-primary">+ Nuevo ejercicio</a>
+    {% endif %}
+</div>
+
+{% if ejercicios %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for ejercicio in ejercicios %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ ejercicio.nombre }}</h5>
+                        {% if ejercicio.tipo_ejercicio %}
+                            <span class="badge bg-secondary mb-2">{{ ejercicio.tipo_ejercicio }}</span>
+                        {% endif %}
+                        <div class="mb-2">
+                            {% for grupo in ejercicio.grupo_muscular.all %}
+                                <span class="badge bg-info text-dark">{{ grupo }}</span>
+                            {% endfor %}
+                        </div>
+                        {% if ejercicio.descripcion %}
+                            <p class="card-text text-muted small">{{ ejercicio.descripcion|truncatewords:15 }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{% url 'ejercicios:detalle' ejercicio.pk %}" class="btn btn-outline-primary btn-sm">Ver detalle</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-muted">No hay ejercicios disponibles todavía.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h4 class="mb-0">{{ accion }} ejercicio</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.nombre.id_for_label }}" class="form-label fw-semibold">Nombre</label>
+                        {{ form.nombre }}
+                        {% if form.nombre.errors %}
+                            <div class="text-danger small">{{ form.nombre.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.tipo_ejercicio.id_for_label }}" class="form-label fw-semibold">Tipo de ejercicio</label>
+                        {{ form.tipo_ejercicio }}
+                        {% if form.tipo_ejercicio.errors %}
+                            <div class="text-danger small">{{ form.tipo_ejercicio.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Grupos musculares</label>
+                        <div class="border rounded p-3">
+                            {{ form.grupo_muscular }}
+                        </div>
+                        {% if form.grupo_muscular.errors %}
+                            <div class="text-danger small">{{ form.grupo_muscular.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-semibold">Descripción</label>
+                        {{ form.descripcion }}
+                        {% if form.descripcion.errors %}
+                            <div class="text-danger small">{{ form.descripcion.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">{{ accion }}</button>
+                        {% if ejercicio %}
+                            <a href="{% url 'ejercicios:detalle' ejercicio.pk %}" class="btn btn-outline-secondary">Cancelar</a>
+                        {% else %}
+                            <a href="{% url 'ejercicios:lista' %}" class="btn btn-outline-secondary">Cancelar</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
