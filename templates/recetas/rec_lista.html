@@ -1,44 +1,153 @@
 {% extends "base.html" %}
+{% block title %}Recetas — Portgas Health{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Recetas</h2>
-    {% if user.is_authenticated %}
-        <a href="{% url 'recetas:crear' %}" class="btn btn-primary">+ Nueva receta</a>
-    {% endif %}
+
+<!-- ── Header ─────────────────────────────────────────── -->
+<div class="d-flex align-items-end justify-content-between gap-3 mb-4 flex-wrap">
+  <div>
+    <p class="section-eyebrow"><i class="bi bi-egg-fried"></i> Nutrición</p>
+    <h2 class="section-title">Recetas</h2>
+  </div>
+  {% if user.is_authenticated %}
+    <a href="{% url 'recetas:crear' %}" class="btn-fire">
+      <i class="bi bi-plus-lg"></i> Nueva receta
+    </a>
+  {% endif %}
 </div>
 
-{% if recetas %}
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for receta in recetas %}
-            <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ receta.nombre }}</h5>
-                        {% if receta.objetivo %}
-                            <span class="badge bg-success mb-2">{{ receta.objetivo }}</span>
-                        {% endif %}
-                        <div class="d-flex gap-3 my-2 text-muted small">
-                            <span>🔥 {{ receta.calorias }} kcal</span>
-                            <span>💪 {{ receta.proteina }}g proteína</span>
-                        </div>
-                        <div class="mb-2">
-                            {% for alergia in receta.alergia.all %}
-                                <span class="badge bg-warning text-dark">{{ alergia }}</span>
-                            {% endfor %}
-                        </div>
-                        {% if receta.descripcion %}
-                            <p class="card-text text-muted small">{{ receta.descripcion|truncatewords:15 }}</p>
-                        {% endif %}
-                    </div>
-                    <div class="card-footer bg-transparent">
-                        <a href="{% url 'recetas:detalle' receta.pk %}" class="btn btn-outline-primary btn-sm">Ver detalle</a>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
+<!-- ── Filter bar ─────────────────────────────────────── -->
+<form method="GET" class="filter-bar mb-5">
+  <div class="filter-bar__inner">
+
+    <!-- Search -->
+    <div class="filter-search">
+      <i class="bi bi-search filter-search__icon"></i>
+      <input type="text" name="q" placeholder="Buscar receta…"
+             value="{{ request.GET.q }}" autocomplete="off">
     </div>
+
+    <!-- Objetivo -->
+    <select name="objetivo">
+      <option value="">Todos los objetivos</option>
+      <option value="volumen"   {% if request.GET.objetivo == "volumen"   %}selected{% endif %}>Volumen</option>
+      <option value="definicion"{% if request.GET.objetivo == "definicion"%}selected{% endif %}>Definición</option>
+      <option value="perder_peso"{% if request.GET.objetivo == "perder_peso"%}selected{% endif %}>Perder peso</option>
+      <option value="mantener"  {% if request.GET.objetivo == "mantener"  %}selected{% endif %}>Mantener</option>
+    </select>
+
+    <!-- Calorías -->
+    <select name="calorias">
+      <option value="">Calorías</option>
+      <option value="300"  {% if request.GET.calorias == "300"  %}selected{% endif %}>Menos de 300</option>
+      <option value="600"  {% if request.GET.calorias == "600"  %}selected{% endif %}>Menos de 600</option>
+      <option value="1000" {% if request.GET.calorias == "1000" %}selected{% endif %}>Menos de 1000</option>
+    </select>
+
+    <!-- Proteína -->
+    <select name="proteina">
+      <option value="">Proteína</option>
+      <option value="20" {% if request.GET.proteina == "20" %}selected{% endif %}>+20 g</option>
+      <option value="40" {% if request.GET.proteina == "40" %}selected{% endif %}>+40 g</option>
+      <option value="60" {% if request.GET.proteina == "60" %}selected{% endif %}>+60 g</option>
+    </select>
+
+    <button type="submit">
+      <i class="bi bi-funnel-fill"></i> Filtrar
+    </button>
+
+    {% if request.GET.q or request.GET.objetivo or request.GET.calorias or request.GET.proteina %}
+      <a href="{% url 'recetas:lista' %}" class="filter-clear">
+        <i class="bi bi-x-lg"></i> Limpiar
+      </a>
+    {% endif %}
+
+  </div>
+</form>
+
+<!-- ── Grid ───────────────────────────────────────────── -->
+{% if recetas %}
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for receta in recetas %}
+      <div class="col">
+        <div class="recipe-card h-100">
+
+          <!-- Colored top strip based on objetivo -->
+          <div class="recipe-card__strip
+            {% if receta.objetivo == 'volumen' %}strip--volumen
+            {% elif receta.objetivo == 'definicion' %}strip--definicion
+            {% elif receta.objetivo == 'perder_peso' %}strip--perder
+            {% else %}strip--default{% endif %}">
+          </div>
+
+          <div class="recipe-card__body">
+            <!-- Title + badge -->
+            <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+              <h5 class="recipe-card__title">{{ receta.nombre }}</h5>
+              {% if receta.objetivo %}
+                <span class="recipe-badge">{{ receta.objetivo }}</span>
+              {% endif %}
+            </div>
+
+            <!-- Macros -->
+            <div class="recipe-macros">
+              <div class="recipe-macro">
+                <span class="recipe-macro__icon fire">🔥</span>
+                <span class="recipe-macro__value">{{ receta.calorias }}</span>
+                <span class="recipe-macro__label">kcal</span>
+              </div>
+              <div class="recipe-macro">
+                <span class="recipe-macro__icon">💪</span>
+                <span class="recipe-macro__value">{{ receta.proteina }}g</span>
+                <span class="recipe-macro__label">proteína</span>
+              </div>
+            </div>
+
+            <!-- Alergias -->
+            {% if receta.alergia.all %}
+              <div class="recipe-allergies">
+                {% for alergia in receta.alergia.all %}
+                  <span class="allergy-tag">{{ alergia }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <!-- Description -->
+            {% if receta.descripcion %}
+              <p class="recipe-card__desc">{{ receta.descripcion|truncatewords:15 }}</p>
+            {% endif %}
+          </div>
+
+          <div class="recipe-card__footer">
+            <a href="{% url 'recetas:detalle' receta.pk %}" class="recipe-card__link">
+              Ver receta <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
 {% else %}
-    <p class="text-muted">No hay recetas disponibles todavía.</p>
+  <!-- Empty state -->
+  <div class="empty-state">
+    <div class="empty-state__icon">🍳</div>
+    <h3 class="empty-state__title">Sin recetas todavía</h3>
+    <p class="empty-state__sub">
+      {% if request.GET.q or request.GET.objetivo %}
+        Ninguna receta coincide con los filtros aplicados.
+      {% else %}
+        Sé el primero en añadir una receta al catálogo.
+      {% endif %}
+    </p>
+    {% if user.is_authenticated %}
+      <a href="{% url 'recetas:crear' %}" class="btn-fire mt-3">
+        <i class="bi bi-plus-lg"></i> Crear receta
+      </a>
+    {% endif %}
+  </div>
 {% endif %}
+
+
 {% endblock %}

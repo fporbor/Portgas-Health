@@ -1,40 +1,133 @@
 {% extends "base.html" %}
+{% block title %}Ejercicios — Portgas Health{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Ejercicios</h2>
-    {% if user.is_authenticated %}
-        <a href="{% url 'ejercicios:crear' %}" class="btn btn-primary">+ Nuevo ejercicio</a>
-    {% endif %}
+
+<!-- ── Header ─────────────────────────────────────────── -->
+<div class="d-flex align-items-end justify-content-between gap-3 mb-4 flex-wrap">
+  <div>
+    <p class="section-eyebrow"><i class="bi bi-lightning-charge-fill"></i> Entrenamiento</p>
+    <h2 class="section-title">Ejercicios</h2>
+  </div>
+  {% if user.is_authenticated %}
+    <a href="{% url 'ejercicios:crear' %}" class="btn-fire">
+      <i class="bi bi-plus-lg"></i> Nuevo ejercicio
+    </a>
+  {% endif %}
 </div>
 
-{% if ejercicios %}
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for ejercicio in ejercicios %}
-            <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ ejercicio.nombre }}</h5>
-                        {% if ejercicio.tipo_ejercicio %}
-                            <span class="badge bg-secondary mb-2">{{ ejercicio.tipo_ejercicio }}</span>
-                        {% endif %}
-                        <div class="mb-2">
-                            {% for grupo in ejercicio.grupo_muscular.all %}
-                                <span class="badge bg-info text-dark">{{ grupo }}</span>
-                            {% endfor %}
-                        </div>
-                        {% if ejercicio.descripcion %}
-                            <p class="card-text text-muted small">{{ ejercicio.descripcion|truncatewords:15 }}</p>
-                        {% endif %}
-                    </div>
-                    <div class="card-footer bg-transparent">
-                        <a href="{% url 'ejercicios:detalle' ejercicio.pk %}" class="btn btn-outline-primary btn-sm">Ver detalle</a>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
+<!-- ── Filter bar ─────────────────────────────────────── -->
+<form method="GET" class="filter-bar mb-5">
+  <div class="filter-bar__inner">
+
+    <div class="filter-search">
+      <i class="bi bi-search filter-search__icon"></i>
+      <input type="text" name="q" placeholder="Buscar ejercicio…"
+             value="{{ request.GET.q }}" autocomplete="off">
     </div>
+
+    <select name="tipo">
+      <option value="">Todos los tipos</option>
+      <option value="fuerza"      {% if request.GET.tipo == "fuerza"      %}selected{% endif %}>Fuerza</option>
+      <option value="cardio"      {% if request.GET.tipo == "cardio"      %}selected{% endif %}>Cardio</option>
+      <option value="flexibilidad"{% if request.GET.tipo == "flexibilidad"%}selected{% endif %}>Flexibilidad</option>
+      <option value="hiit"        {% if request.GET.tipo == "hiit"        %}selected{% endif %}>HIIT</option>
+      <option value="movilidad"   {% if request.GET.tipo == "movilidad"   %}selected{% endif %}>Movilidad</option>
+    </select>
+
+    <select name="grupo">
+      <option value="">Grupo muscular</option>
+      <option value="pecho"    {% if request.GET.grupo == "pecho"    %}selected{% endif %}>Pecho</option>
+      <option value="espalda"  {% if request.GET.grupo == "espalda"  %}selected{% endif %}>Espalda</option>
+      <option value="piernas"  {% if request.GET.grupo == "piernas"  %}selected{% endif %}>Piernas</option>
+      <option value="hombros"  {% if request.GET.grupo == "hombros"  %}selected{% endif %}>Hombros</option>
+      <option value="brazos"   {% if request.GET.grupo == "brazos"   %}selected{% endif %}>Brazos</option>
+      <option value="core"     {% if request.GET.grupo == "core"     %}selected{% endif %}>Core</option>
+    </select>
+
+    <button type="submit">
+      <i class="bi bi-funnel-fill"></i> Filtrar
+    </button>
+
+    {% if request.GET.q or request.GET.tipo or request.GET.grupo %}
+      <a href="{% url 'ejercicios:lista' %}" class="filter-clear">
+        <i class="bi bi-x-lg"></i> Limpiar
+      </a>
+    {% endif %}
+
+  </div>
+</form>
+
+<!-- ── Grid ───────────────────────────────────────────── -->
+{% if ejercicios %}
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for ejercicio in ejercicios %}
+      <div class="col">
+        <div class="recipe-card exercise-card h-100">
+
+          <div class="recipe-card__strip
+            {% if ejercicio.tipo_ejercicio == 'fuerza'       %}strip--fuerza
+            {% elif ejercicio.tipo_ejercicio == 'cardio'     %}strip--cardio
+            {% elif ejercicio.tipo_ejercicio == 'hiit'       %}strip--hiit
+            {% elif ejercicio.tipo_ejercicio == 'flexibilidad' or ejercicio.tipo_ejercicio == 'movilidad' %}strip--movil
+            {% else %}strip--default{% endif %}">
+          </div>
+
+          <div class="recipe-card__body">
+
+            <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+              <h5 class="recipe-card__title">{{ ejercicio.nombre }}</h5>
+              {% if ejercicio.tipo_ejercicio %}
+                <span class="exercise-type-badge exercise-type-badge--{{ ejercicio.tipo_ejercicio }}">
+                  {{ ejercicio.tipo_ejercicio }}
+                </span>
+              {% endif %}
+            </div>
+
+            {% if ejercicio.grupo_muscular.all %}
+              <div class="exercise-muscles">
+                {% for grupo in ejercicio.grupo_muscular.all %}
+                  <span class="muscle-tag">
+                    <i class="bi bi-circle-fill"></i>{{ grupo }}
+                  </span>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            {% if ejercicio.descripcion %}
+              <p class="recipe-card__desc mt-2">{{ ejercicio.descripcion|truncatewords:15 }}</p>
+            {% endif %}
+
+          </div>
+
+          <div class="recipe-card__footer">
+            <a href="{% url 'ejercicios:detalle' ejercicio.pk %}" class="recipe-card__link">
+              Ver ejercicio <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
 {% else %}
-    <p class="text-muted">No hay ejercicios disponibles todavía.</p>
+  <div class="empty-state">
+    <div class="empty-state__icon">⚡</div>
+    <h3 class="empty-state__title">Sin ejercicios todavía</h3>
+    <p class="empty-state__sub">
+      {% if request.GET.q or request.GET.tipo or request.GET.grupo %}
+        Ningún ejercicio coincide con los filtros aplicados.
+      {% else %}
+        Sé el primero en añadir un ejercicio al catálogo.
+      {% endif %}
+    </p>
+    {% if user.is_authenticated %}
+      <a href="{% url 'ejercicios:crear' %}" class="btn-fire mt-3">
+        <i class="bi bi-plus-lg"></i> Crear ejercicio
+      </a>
+    {% endif %}
+  </div>
 {% endif %}
+
 {% endblock %}

@@ -1,29 +1,64 @@
 {% extends "base.html" %}
-{% block title %}Entrar — Portgas Health{% endblock %}
+{% block title %}Portgas Health{% endblock %}
 {% block content %}
 
-<div class="auth-wrapper">
-  <div class="auth-card">
-    <h1 class="auth-title">Iniciar sesión</h1>
-    <p class="auth-sub">Bienvenido de nuevo</p>
+<div class="login-scene">
 
-    <form method="POST">
+  <!-- Decorative background word -->
+  <span class="login-bg-word" aria-hidden="true">FUEGO</span>
+
+  <!-- Glow orb -->
+  <div class="login-orb" aria-hidden="true"></div>
+
+  <div class="login-card">
+
+    <!-- Top accent bar -->
+    <div class="login-card__bar"></div>
+
+    <!-- Header -->
+    <div class="login-card__head">
+      <h1 class="login-title">Bienvenido</h1>
+      <p class="login-sub">Entra a tu cuenta y sigue quemando</p>
+    </div>
+
+    <!-- Form -->
+    <form method="POST" class="login-form" novalidate>
       {% csrf_token %}
+
       {% for field in form %}
-        <div class="field-group">
-          <label>{{ field.label }}</label>
+        <div class="login-field {% if field.errors %}has-error{% endif %}">
+          <label class="login-label" for="{{ field.id_for_label }}">
+            {% if field.name == "username" %}
+              <i class="bi bi-person"></i>
+            {% elif field.name == "password" %}
+              <i class="bi bi-lock"></i>
+            {% else %}
+              <i class="bi bi-input-cursor-text"></i>
+            {% endif %}
+            {{ field.label }}
+          </label>
           {{ field }}
           {% if field.errors %}
-            <span class="field-error">{{ field.errors|join:", " }}</span>
+            <span class="login-error">
+              <i class="bi bi-exclamation-circle"></i>
+              {{ field.errors|join:", " }}
+            </span>
           {% endif %}
         </div>
       {% endfor %}
-      <button type="submit" class="btn btn--primary btn--full">Entrar</button>
+
+      <button type="submit" class="login-btn">
+        <span>Entrar</span>
+        <i class="bi bi-arrow-right"></i>
+      </button>
     </form>
 
-    <p class="auth-footer">
-      ¿No tienes cuenta? <a href="/registro/">Regístrate</a>
+    <!-- Footer -->
+    <p class="login-footer">
+      ¿No tienes cuenta?
+      <a href="/registro/" class="login-register-link">Regístrate</a>
     </p>
+
   </div>
 </div>
 
