@@ -7,8 +7,26 @@ from .forms import EjercicioForm
 
 def lista_ejercicios(request):
     ejercicios = Ejercicio.objects.select_related('tipo_ejercicio', 'autor') \
-                                  .prefetch_related('grupo_muscular').all()
-    return render(request, 'ejercicios/ejec_lista.html', {'ejercicios': ejercicios})
+                                  .prefetch_related('grupo_muscular')
+
+    # ─── Filtros ───────────────────────────────────────────────
+    q = request.GET.get("q")
+    tipo = request.GET.get("tipo")
+    grupo = request.GET.get("grupo")
+
+    if q:
+        ejercicios = ejercicios.filter(nombre__icontains=q)
+
+    if tipo:
+        ejercicios = ejercicios.filter(tipo_ejercicio__nombre=tipo)
+
+    if grupo:
+        ejercicios = ejercicios.filter(grupo_muscular__nombre=grupo)
+
+    return render(request, 'ejercicios/ejec_lista.html', {
+        'ejercicios': ejercicios,
+    })
+
 
 
 def detalle_ejercicio(request, pk):

@@ -1,5 +1,5 @@
 from django.views.generic import ListView, DetailView
-from .models import Gimnasio
+from .models import Gimnasio, TipoGimnasio
 
 class GimnasioListView(ListView):
     model = Gimnasio
@@ -27,6 +27,11 @@ class GimnasioListView(ListView):
             queryset = queryset.filter(tipo_gimnasio__id=tipo)
 
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["tipos"] = TipoGimnasio.objects.all()
+        return context
 
 
 class GimnasioDetailView(DetailView):

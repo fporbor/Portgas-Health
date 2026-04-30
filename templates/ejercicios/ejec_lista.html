@@ -26,23 +26,28 @@
              value="{{ request.GET.q }}" autocomplete="off">
     </div>
 
+    <!-- TIPOS DE EJERCICIO (CORRECTOS) -->
     <select name="tipo">
       <option value="">Todos los tipos</option>
-      <option value="fuerza"      {% if request.GET.tipo == "fuerza"      %}selected{% endif %}>Fuerza</option>
-      <option value="cardio"      {% if request.GET.tipo == "cardio"      %}selected{% endif %}>Cardio</option>
-      <option value="flexibilidad"{% if request.GET.tipo == "flexibilidad"%}selected{% endif %}>Flexibilidad</option>
-      <option value="hiit"        {% if request.GET.tipo == "hiit"        %}selected{% endif %}>HIIT</option>
-      <option value="movilidad"   {% if request.GET.tipo == "movilidad"   %}selected{% endif %}>Movilidad</option>
+      <option value="Hipertrofia"     {% if request.GET.tipo == "Hipertrofia"     %}selected{% endif %}>Hipertrofia</option>
+      <option value="Fuerza"          {% if request.GET.tipo == "Fuerza"          %}selected{% endif %}>Fuerza</option>
+      <option value="Resistencia"     {% if request.GET.tipo == "Resistencia"     %}selected{% endif %}>Resistencia</option>
+      <option value="Movilidad"       {% if request.GET.tipo == "Movilidad"       %}selected{% endif %}>Movilidad</option>
+      <option value="Cardio"          {% if request.GET.tipo == "Cardio"          %}selected{% endif %}>Cardio</option>
+      <option value="Rehabilitación"  {% if request.GET.tipo == "Rehabilitación"  %}selected{% endif %}>Rehabilitación</option>
     </select>
 
+    <!-- GRUPOS MUSCULARES (CORRECTOS) -->
     <select name="grupo">
       <option value="">Grupo muscular</option>
-      <option value="pecho"    {% if request.GET.grupo == "pecho"    %}selected{% endif %}>Pecho</option>
-      <option value="espalda"  {% if request.GET.grupo == "espalda"  %}selected{% endif %}>Espalda</option>
-      <option value="piernas"  {% if request.GET.grupo == "piernas"  %}selected{% endif %}>Piernas</option>
-      <option value="hombros"  {% if request.GET.grupo == "hombros"  %}selected{% endif %}>Hombros</option>
-      <option value="brazos"   {% if request.GET.grupo == "brazos"   %}selected{% endif %}>Brazos</option>
-      <option value="core"     {% if request.GET.grupo == "core"     %}selected{% endif %}>Core</option>
+      <option value="Pecho"     {% if request.GET.grupo == "Pecho"     %}selected{% endif %}>Pecho</option>
+      <option value="Espalda"   {% if request.GET.grupo == "Espalda"   %}selected{% endif %}>Espalda</option>
+      <option value="Hombros"   {% if request.GET.grupo == "Hombros"   %}selected{% endif %}>Hombros</option>
+      <option value="Bíceps"    {% if request.GET.grupo == "Bíceps"    %}selected{% endif %}>Bíceps</option>
+      <option value="Tríceps"   {% if request.GET.grupo == "Tríceps"   %}selected{% endif %}>Tríceps</option>
+      <option value="Piernas"   {% if request.GET.grupo == "Piernas"   %}selected{% endif %}>Piernas</option>
+      <option value="Glúteos"   {% if request.GET.grupo == "Glúteos"   %}selected{% endif %}>Glúteos</option>
+      <option value="Core"      {% if request.GET.grupo == "Core"      %}selected{% endif %}>Core</option>
     </select>
 
     <button type="submit">
@@ -65,11 +70,14 @@
       <div class="col">
         <div class="recipe-card exercise-card h-100">
 
+          <!-- TIRA DE COLOR (CORREGIDA) -->
           <div class="recipe-card__strip
-            {% if ejercicio.tipo_ejercicio == 'fuerza'       %}strip--fuerza
-            {% elif ejercicio.tipo_ejercicio == 'cardio'     %}strip--cardio
-            {% elif ejercicio.tipo_ejercicio == 'hiit'       %}strip--hiit
-            {% elif ejercicio.tipo_ejercicio == 'flexibilidad' or ejercicio.tipo_ejercicio == 'movilidad' %}strip--movil
+            {% if ejercicio.tipo_ejercicio.nombre == 'Fuerza' %}strip--fuerza
+            {% elif ejercicio.tipo_ejercicio.nombre == 'Cardio' %}strip--cardio
+            {% elif ejercicio.tipo_ejercicio.nombre == 'Resistencia' %}strip--resistencia
+            {% elif ejercicio.tipo_ejercicio.nombre == 'Movilidad' %}strip--movil
+            {% elif ejercicio.tipo_ejercicio.nombre == 'Rehabilitación' %}strip--rehab
+            {% elif ejercicio.tipo_ejercicio.nombre == 'Hipertrofia' %}strip--hipertrofia
             {% else %}strip--default{% endif %}">
           </div>
 
@@ -77,9 +85,10 @@
 
             <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
               <h5 class="recipe-card__title">{{ ejercicio.nombre }}</h5>
+
               {% if ejercicio.tipo_ejercicio %}
-                <span class="exercise-type-badge exercise-type-badge--{{ ejercicio.tipo_ejercicio }}">
-                  {{ ejercicio.tipo_ejercicio }}
+                <span class="exercise-type-badge exercise-type-badge--{{ ejercicio.tipo_ejercicio.nombre }}">
+                  {{ ejercicio.tipo_ejercicio.nombre }}
                 </span>
               {% endif %}
             </div>
@@ -88,7 +97,7 @@
               <div class="exercise-muscles">
                 {% for grupo in ejercicio.grupo_muscular.all %}
                   <span class="muscle-tag">
-                    <i class="bi bi-circle-fill"></i>{{ grupo }}
+                    <i class="bi bi-circle-fill"></i>{{ grupo.nombre }}
                   </span>
                 {% endfor %}
               </div>

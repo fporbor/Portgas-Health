@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,8 +26,7 @@ SECRET_KEY = 'django-insecure-fuh0q!_u(7&pux)qs_h)*wuc=*m$-in9%u81z2!=7_=5bg^b5*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
 
 # Application definition
 
@@ -72,6 +72,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'portgas_health.wsgi.application'
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 
 
 # Database
@@ -120,6 +123,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = "/app/staticfiles"
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
