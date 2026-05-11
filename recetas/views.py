@@ -1,14 +1,60 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Receta
+from .models import Receta, Alergia
 from .forms import RecetaForm
 
 
+
 def lista_recetas(request):
-    recetas = Receta.objects.select_related('objetivo', 'autor') \
-                            .prefetch_related('alergia').all()
-    return render(request, 'recetas/rec_lista.html', {'recetas': recetas})
+
+    recetas = (
+        Receta.objects
+        .select_related('objetivo', 'autor')
+        .prefetch_related('alergia')
+    )
+
+    # --- Search ---
+    q = request.GET.get("q")
+    if q:
+        recetas = recetas.filter(nombre__icontains=q)
+
+    # --- Objetivo ---
+    objetivo = request.GET.get("objetivo")
+    if objetivo:
+        recetas = recetas.filter(objetivo__nombre__iexact=objetivo)
+
+    # --- Alergia ---
+    alergia = request.GET.get("alergia")
+    if alergia:
+        recetas = recetas.exclude(alergia__nombre__iexact=alergia)
+
+    # --- Calorías rango ---
+    cal_min = request.GET.get("cal_min")
+    cal_max = request.GET.get("cal_max")
+
+    if cal_min:
+        recetas = recetas.filter(calorias__gte=int(cal_min))
+
+    if cal_max:
+        recetas = recetas.filter(calorias__lte=int(cal_max))
+
+    # --- Proteína rango ---
+    pro_min = request.GET.get("pro_min")
+    pro_max = request.GET.get("pro_max")
+
+    if pro_min:
+        recetas = recetas.filter(proteina__gte=int(pro_min))
+
+    if pro_max:
+        recetas = recetas.filter(proteina__lte=int(pro_max))
+
+    recetas = recetas.distinct()
+
+    return render(request, 'recetas/rec_lista.html', {
+        'recetas': recetas,
+        'alergias': Alergia.objects.all()
+    })
 
 
 def detalle_receta(request, pk):

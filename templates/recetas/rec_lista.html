@@ -30,33 +30,111 @@
     <!-- Objetivo -->
     <select name="objetivo">
       <option value="">Todos los objetivos</option>
-      <option value="volumen"   {% if request.GET.objetivo == "volumen"   %}selected{% endif %}>Volumen</option>
-      <option value="definicion"{% if request.GET.objetivo == "definicion"%}selected{% endif %}>Definición</option>
-      <option value="perder_peso"{% if request.GET.objetivo == "perder_peso"%}selected{% endif %}>Perder peso</option>
-      <option value="mantener"  {% if request.GET.objetivo == "mantener"  %}selected{% endif %}>Mantener</option>
+
+      <option value="Pérdida de peso"
+          {% if request.GET.objetivo == "Pérdida de peso" %}selected{% endif %}>
+          Pérdida de peso
+      </option>
+
+      <option value="Ganancia muscular"
+          {% if request.GET.objetivo == "Ganancia muscular" %}selected{% endif %}>
+          Ganancia muscular
+      </option>
+
+      <option value="Mantenimiento"
+          {% if request.GET.objetivo == "Mantenimiento" %}selected{% endif %}>
+          Mantenimiento
+      </option>
+
+      <option value="Rendimiento deportivo"
+          {% if request.GET.objetivo == "Rendimiento deportivo" %}selected{% endif %}>
+          Rendimiento deportivo
+      </option>
+
+      <option value="Salud general"
+          {% if request.GET.objetivo == "Salud general" %}selected{% endif %}>
+          Salud general
+      </option>
     </select>
 
-    <!-- Calorías -->
-    <select name="calorias">
-      <option value="">Calorías</option>
-      <option value="300"  {% if request.GET.calorias == "300"  %}selected{% endif %}>Menos de 300</option>
-      <option value="600"  {% if request.GET.calorias == "600"  %}selected{% endif %}>Menos de 600</option>
-      <option value="1000" {% if request.GET.calorias == "1000" %}selected{% endif %}>Menos de 1000</option>
+
+    <!-- Alergia -->
+    <select name="alergia">
+      <option value="">Alergias</option>
+      {% for a in alergias %}
+        <option value="{{ a.nombre }}" {% if request.GET.alergia == a.nombre %}selected{% endif %}>
+          {{ a.nombre }}
+        </option>
+      {% endfor %}
     </select>
 
-    <!-- Proteína -->
-    <select name="proteina">
-      <option value="">Proteína</option>
-      <option value="20" {% if request.GET.proteina == "20" %}selected{% endif %}>+20 g</option>
-      <option value="40" {% if request.GET.proteina == "40" %}selected{% endif %}>+40 g</option>
-      <option value="60" {% if request.GET.proteina == "60" %}selected{% endif %}>+60 g</option>
-    </select>
+    <!-- Calorías desplegable -->
+    <div class="dropdown-range">
+      <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#caloriasCollapse">
+        Calorías ▾
+      </button>
+
+      <div class="collapse mt-2" id="caloriasCollapse">
+
+        <div class="range-wrapper">
+          <input id="calMin" type="range" min="0" max="1500" step="10"
+                name="cal_min"
+                value="{{ request.GET.cal_min|default:0 }}"
+                class="sc-wallapop-range-selector">
+
+          <input id="calMax" type="range" min="0" max="1500" step="10"
+                name="cal_max"
+                value="{{ request.GET.cal_max|default:1500 }}"
+                class="sc-wallapop-range-selector">
+        </div>
+
+        <div class="range-values">
+          <span id="calMinValue">{{ request.GET.cal_min|default:0 }} kcal</span>
+          —
+          <span id="calMaxValue">{{ request.GET.cal_max|default:1500 }} kcal</span>
+        </div>
+
+      </div>
+    </div>
+
+
+
+    <!-- Proteína desplegable -->
+    <div class="dropdown-range">
+      <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#proteinaCollapse">
+        Proteína ▾
+      </button>
+
+      <div class="collapse mt-2" id="proteinaCollapse">
+
+        <div class="range-wrapper">
+          <input id="proMin" type="range" min="0" max="200" step="5"
+                name="pro_min"
+                value="{{ request.GET.pro_min|default:0 }}"
+                class="sc-wallapop-range-selector">
+
+          <input id="proMax" type="range" min="0" max="200" step="5"
+                name="pro_max"
+                value="{{ request.GET.pro_max|default:200 }}"
+                class="sc-wallapop-range-selector">
+        </div>
+
+        <div class="range-values">
+          <span id="proMinValue">{{ request.GET.pro_min|default:0 }} g</span>
+          —
+          <span id="proMaxValue">{{ request.GET.pro_max|default:200 }} g</span>
+        </div>
+
+      </div>
+    </div>
+
+
 
     <button type="submit">
       <i class="bi bi-funnel-fill"></i> Filtrar
     </button>
 
-    {% if request.GET.q or request.GET.objetivo or request.GET.calorias or request.GET.proteina %}
+    {% if request.GET %}
       <a href="{% url 'recetas:lista' %}" class="filter-clear">
         <i class="bi bi-x-lg"></i> Limpiar
       </a>
@@ -74,9 +152,9 @@
 
           <!-- Colored top strip based on objetivo -->
           <div class="recipe-card__strip
-            {% if receta.objetivo == 'volumen' %}strip--volumen
-            {% elif receta.objetivo == 'definicion' %}strip--definicion
-            {% elif receta.objetivo == 'perder_peso' %}strip--perder
+            {% if receta.objetivo.nombre == 'volumen' %}strip--volumen
+            {% elif receta.objetivo.nombre == 'definicion' %}strip--definicion
+            {% elif receta.objetivo.nombre == 'perder_peso' %}strip--perder
             {% else %}strip--default{% endif %}">
           </div>
 
@@ -85,7 +163,7 @@
             <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
               <h5 class="recipe-card__title">{{ receta.nombre }}</h5>
               {% if receta.objetivo %}
-                <span class="recipe-badge">{{ receta.objetivo }}</span>
+                <span class="recipe-badge">{{ receta.objetivo.nombre }}</span>
               {% endif %}
             </div>
 
@@ -107,7 +185,7 @@
             {% if receta.alergia.all %}
               <div class="recipe-allergies">
                 {% for alergia in receta.alergia.all %}
-                  <span class="allergy-tag">{{ alergia }}</span>
+                  <span class="allergy-tag">{{ alergia.nombre }}</span>
                 {% endfor %}
               </div>
             {% endif %}
@@ -135,7 +213,7 @@
     <div class="empty-state__icon">🍳</div>
     <h3 class="empty-state__title">Sin recetas todavía</h3>
     <p class="empty-state__sub">
-      {% if request.GET.q or request.GET.objetivo %}
+      {% if request.GET %}
         Ninguna receta coincide con los filtros aplicados.
       {% else %}
         Sé el primero en añadir una receta al catálogo.
@@ -148,6 +226,5 @@
     {% endif %}
   </div>
 {% endif %}
-
 
 {% endblock %}

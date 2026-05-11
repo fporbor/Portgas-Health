@@ -1107,3 +1107,33 @@ ul li:last-child:first-child {
   color: var(--text);
   border-color: rgba(255,92,26,0.2);
 }
+.sc-wallapop-range-selector {
+  width: 100%;
+  appearance: none;
+  height: 6px;
+  border-radius: 5px;
+  background: #d1dbe0;
+  outline: none;
+  margin-bottom: 8px;
+}
+
+.sc-wallapop-range-selector::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #015354;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.range-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.range-values {
+  font-size: 14px;
+  color: #015354;
+  font-weight: 600;
+}
