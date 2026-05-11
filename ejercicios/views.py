@@ -85,4 +85,6 @@ def eliminar_ejercicio(request, pk):
         ejercicio.delete()
         messages.success(request, 'Ejercicio eliminado correctamente.')
         return redirect('ejercicios:lista')
-    return render(request, 'ejercicios/ejec_crear.html', {'ejercicio': ejercicio})
+
+    return render(request, 'ejercicios/ejec_eliminar.html', {'ejercicio': ejercicio})
+

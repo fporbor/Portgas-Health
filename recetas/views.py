@@ -113,4 +113,5 @@ def eliminar_receta(request, pk):
         receta.delete()
         messages.success(request, 'Receta eliminada correctamente.')
         return redirect('recetas:lista')
+
     return render(request, 'recetas/rec_eliminar.html', {'receta': receta})
