@@ -23,6 +23,21 @@ def lista_ejercicios(request):
     if grupo:
         ejercicios = ejercicios.filter(grupo_muscular__nombre=grupo)
 
+    # ─── Ordenamiento ───────────────────────────────────────
+    orden = request.GET.get("orden")
+    if orden == "nombre_asc":
+        ejercicios = ejercicios.order_by("nombre")
+    elif orden == "nombre_desc":
+        ejercicios = ejercicios.order_by("-nombre")
+    elif orden == "tipo_asc":
+        ejercicios = ejercicios.order_by("tipo_ejercicio__nombre")
+    elif orden == "tipo_desc":
+        ejercicios = ejercicios.order_by("-tipo_ejercicio__nombre")
+    elif orden == "grupo_asc":
+        ejercicios = ejercicios.order_by("grupo_muscular__nombre")
+    elif orden == "grupo_desc":
+        ejercicios = ejercicios.order_by("-grupo_muscular__nombre")
+
     return render(request, 'ejercicios/ejec_lista.html', {
         'ejercicios': ejercicios,
     })

@@ -4,8 +4,6 @@ from django.contrib import messages
 from .models import Receta, Alergia
 from .forms import RecetaForm
 
-
-
 def lista_recetas(request):
 
     recetas = (
@@ -24,10 +22,11 @@ def lista_recetas(request):
     if objetivo:
         recetas = recetas.filter(objetivo__nombre__iexact=objetivo)
 
-    # --- Alergia ---
-    alergia = request.GET.get("alergia")
-    if alergia:
-        recetas = recetas.exclude(alergia__nombre__iexact=alergia)
+    # --- Alergias múltiples ---
+    alergias_seleccionadas = request.GET.getlist("alergia")
+
+    if alergias_seleccionadas:
+        recetas = recetas.exclude(alergia__nombre__in=alergias_seleccionadas)
 
     # --- Calorías rango ---
     cal_min = request.GET.get("cal_min")
@@ -49,13 +48,28 @@ def lista_recetas(request):
     if pro_max:
         recetas = recetas.filter(proteina__lte=int(pro_max))
 
+    # --- Ordenamiento ---
+    orden = request.GET.get("orden")
+    if orden == "nombre_asc":
+        recetas = recetas.order_by("nombre")
+    elif orden == "nombre_desc":
+        recetas = recetas.order_by("-nombre")
+    elif orden == "calorias_asc":
+        recetas = recetas.order_by("calorias")
+    elif orden == "calorias_desc":
+        recetas = recetas.order_by("-calorias")
+    elif orden == "proteina_asc":
+        recetas = recetas.order_by("proteina")
+    elif orden == "proteina_desc":
+        recetas = recetas.order_by("-proteina")
+
     recetas = recetas.distinct()
 
     return render(request, 'recetas/rec_lista.html', {
         'recetas': recetas,
-        'alergias': Alergia.objects.all()
+        'alergias': Alergia.objects.all(),
+        'alergias_seleccionadas': alergias_seleccionadas,  # 👈 clave
     })
-
 
 def detalle_receta(request, pk):
     receta = get_object_or_404(

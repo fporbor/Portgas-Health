@@ -58,15 +58,36 @@
     </select>
 
 
-    <!-- Alergia -->
-    <select name="alergia">
-      <option value="">Alergias</option>
-      {% for a in alergias %}
-        <option value="{{ a.nombre }}" {% if request.GET.alergia == a.nombre %}selected{% endif %}>
-          {{ a.nombre }}
-        </option>
-      {% endfor %}
-    </select>
+    <div class="multi-select" id="alergiasDropdown">
+      <div class="multi-select__input" onclick="toggleDropdown()">
+          <span id="alergiasText">
+              {% if alergias_seleccionadas %}
+                  {{ alergias_seleccionadas|join:", " }}
+              {% else %}
+                  Alergias
+              {% endif %}
+          </span>
+          <span class="arrow">▼</span>
+      </div>
+
+      <div class="multi-select__dropdown" id="dropdownList">
+          {% for a in alergias %}
+              <label class="multi-select__option">
+                  <input 
+                      type="checkbox" 
+                      name="alergia" 
+                      value="{{ a.nombre }}"
+                      {% if a.nombre in alergias_seleccionadas %}checked{% endif %}
+                      onchange="updateSelected()"
+                  >
+                  {{ a.nombre }}
+              </label>
+          {% endfor %}
+      </div>
+    </div>
+
+
+
 
     <!-- Calorías desplegable -->
     <div class="dropdown-range">
@@ -128,6 +149,33 @@
       </div>
     </div>
 
+    <select name="orden">
+      <option value="">Ordenar por…</option>
+
+      <option value="nombre_asc"  {% if request.GET.orden == "nombre_asc" %}selected{% endif %}>
+          Nombre (A → Z)
+      </option>
+
+      <option value="nombre_desc" {% if request.GET.orden == "nombre_desc" %}selected{% endif %}>
+          Nombre (Z → A)
+      </option>
+
+      <option value="calorias_asc" {% if request.GET.orden == "calorias_asc" %}selected{% endif %}>
+          Calorías (menor → mayor)
+      </option>
+
+      <option value="calorias_desc" {% if request.GET.orden == "calorias_desc" %}selected{% endif %}>
+          Calorías (mayor → menor)
+      </option>
+
+      <option value="proteina_asc" {% if request.GET.orden == "proteina_asc" %}selected{% endif %}>
+          Proteína (menor → mayor)
+      </option>
+
+      <option value="proteina_desc" {% if request.GET.orden == "proteina_desc" %}selected{% endif %}>
+          Proteína (mayor → menor)
+      </option>
+    </select>
 
 
     <button type="submit">
@@ -161,11 +209,19 @@
           <div class="recipe-card__body">
             <!-- Title + badge -->
             <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
-              <h5 class="recipe-card__title">{{ receta.nombre }}</h5>
+              <div class="d-flex align-items-center gap-2">
+                  <h5 class="recipe-card__title">{{ receta.nombre }}</h5>
+
+                  {% if request.user.is_authenticated and receta.autor_id == request.user.id %}
+                      <span class="badge bg-primary">Mía</span>
+                  {% endif %}
+              </div>
+
               {% if receta.objetivo %}
                 <span class="recipe-badge">{{ receta.objetivo.nombre }}</span>
               {% endif %}
             </div>
+
 
             <!-- Macros -->
             <div class="recipe-macros">
@@ -226,5 +282,8 @@
     {% endif %}
   </div>
 {% endif %}
+{% load static %}
+
+<script src="{% static 'app/recetas_filtros.js' %}"></script>
 
 {% endblock %}

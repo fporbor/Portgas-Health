@@ -3,13 +3,64 @@
 {% block title %}{{ gimnasio.nombre }}{% endblock %}
 
 {% block content %}
-<h1>{{ gimnasio.nombre }}</h1>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
 
-<p><strong>Provincia:</strong> {{ gimnasio.provincia }}</p>
-<p><strong>Localidad:</strong> {{ gimnasio.localidad }}</p>
-<p><strong>Teléfono:</strong> {{ gimnasio.telefono }}</p>
-<p><strong>Email:</strong> {{ gimnasio.email }}</p>
-<p><strong>Tipo:</strong> {{ gimnasio.tipo_gimnasio }}</p>
+                <h1 class="card-title">{{ gimnasio.nombre }}</h1>
 
-<a href="{% url 'gimnasios:lista_gimnasios' %}">Volver</a>
+                <!-- VIDEO -->
+                {% if gimnasio.embed_url %}
+                <div class="video-container mb-3">
+                    <iframe
+                        src="{{ gimnasio.embed_url }}"
+                        frameborder="0"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                {% endif %}
+
+                <p><strong>Provincia:</strong> {{ gimnasio.provincia }}</p>
+                <p><strong>Localidad:</strong> {{ gimnasio.localidad }}</p>
+                <p><strong>Teléfono:</strong> {{ gimnasio.telefono }}</p>
+                <p><strong>Email:</strong> {{ gimnasio.email }}</p>
+                <p><strong>Tipo:</strong> {{ gimnasio.tipo_gimnasio }}</p>
+
+                <!-- BOTÓN DE LIKE -->
+                <form action="{% url 'usuarios:toggle_like' 'gimnasio' gimnasio.id %}" method="post" class="mt-3">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger">
+                        ❤️ {{ gimnasio.likes.count }}
+                    </button>
+                </form>
+
+            </div>
+
+            <div class="card-footer bg-transparent">
+                <a href="{% url 'gimnasios:lista_gimnasios' %}" class="btn btn-outline-secondary">← Volver</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* VIDEO RESPONSIVE */
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+</style>
 {% endblock %}
+

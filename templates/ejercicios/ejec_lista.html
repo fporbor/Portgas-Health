@@ -49,6 +49,33 @@
       <option value="Glúteos"   {% if request.GET.grupo == "Glúteos"   %}selected{% endif %}>Glúteos</option>
       <option value="Core"      {% if request.GET.grupo == "Core"      %}selected{% endif %}>Core</option>
     </select>
+    <select name="orden">
+      <option value="">Ordenar por…</option>
+
+      <option value="nombre_asc"  {% if request.GET.orden == "nombre_asc" %}selected{% endif %}>
+          Nombre (A → Z)
+      </option>
+
+      <option value="nombre_desc" {% if request.GET.orden == "nombre_desc" %}selected{% endif %}>
+          Nombre (Z → A)
+      </option>
+
+      <option value="tipo_asc" {% if request.GET.orden == "tipo_asc" %}selected{% endif %}>
+          Tipo (A → Z)
+      </option>
+
+      <option value="tipo_desc" {% if request.GET.orden == "tipo_desc" %}selected{% endif %}>
+          Tipo (Z → A)
+      </option>
+
+      <option value="grupo_asc" {% if request.GET.orden == "grupo_asc" %}selected{% endif %}>
+          Grupo muscular (A → Z)
+      </option>
+
+      <option value="grupo_desc" {% if request.GET.orden == "grupo_desc" %}selected{% endif %}>
+          Grupo muscular (Z → A)
+      </option>
+    </select>
 
     <button type="submit">
       <i class="bi bi-funnel-fill"></i> Filtrar
@@ -84,7 +111,14 @@
           <div class="recipe-card__body">
 
             <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
-              <h5 class="recipe-card__title">{{ ejercicio.nombre }}</h5>
+
+              <div class="d-flex align-items-center gap-2">
+                  <h5 class="recipe-card__title">{{ ejercicio.nombre }}</h5>
+
+                  {% if ejercicio.autor == user %}
+                      <span class="badge bg-primary">Mío</span>
+                  {% endif %}
+              </div>
 
               {% if ejercicio.tipo_ejercicio %}
                 <span class="exercise-type-badge exercise-type-badge--{{ ejercicio.tipo_ejercicio.nombre }}">
@@ -92,6 +126,7 @@
                 </span>
               {% endif %}
             </div>
+
 
             {% if ejercicio.grupo_muscular.all %}
               <div class="exercise-muscles">

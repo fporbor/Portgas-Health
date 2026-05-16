@@ -26,6 +26,7 @@ urlpatterns = [
     path("gimnasios/", include("gimnasios.urls")),
     path("ejercicios/", include("ejercicios.urls")),
     path("recetas/", include("recetas.urls")),
+    path('usuarios/', include('usuarios.urls')),
     path('login/',    auth_views.LoginView.as_view(),  name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     path('registro/', registro,                        name='registro'),

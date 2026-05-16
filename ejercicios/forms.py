@@ -1,11 +1,16 @@
 from django import forms
 from .models import Ejercicio
 
-
 class EjercicioForm(forms.ModelForm):
     class Meta:
         model = Ejercicio
-        fields = ['nombre', 'tipo_ejercicio', 'grupo_muscular', 'descripcion']
+        fields = [
+            'nombre',
+            'tipo_ejercicio',
+            'grupo_muscular',
+            'descripcion',
+            'video_url',
+        ]
         widgets = {
             'nombre': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -19,5 +24,9 @@ class EjercicioForm(forms.ModelForm):
                 'class': 'form-control',
                 'rows': 4,
                 'placeholder': 'Descripción del ejercicio...'
+            }),
+            'video_url': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'URL del video de YouTube (opcional)'
             }),
         }

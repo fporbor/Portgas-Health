@@ -18,6 +18,25 @@
             </option>
         {% endfor %}
     </select>
+    <select name="orden">
+        <option value="">Ordenar por…</option>
+
+        <option value="nombre_asc"  {% if request.GET.orden == "nombre_asc" %}selected{% endif %}>
+            Nombre (A → Z)
+        </option>
+
+        <option value="nombre_desc" {% if request.GET.orden == "nombre_desc" %}selected{% endif %}>
+            Nombre (Z → A)
+        </option>
+
+        <option value="provincia_asc"  {% if request.GET.orden == "provincia_asc" %}selected{% endif %}>
+            Provincia (A → Z)
+        </option>
+
+        <option value="provincia_desc" {% if request.GET.orden == "provincia_desc" %}selected{% endif %}>
+            Provincia (Z → A)
+        </option>
+    </select>
 
     <button type="submit">Filtrar</button>
 </form>

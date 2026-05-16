@@ -13,7 +13,9 @@ class GimnasioListView(ListView):
         localidad = self.request.GET.get("localidad")
         nombre = self.request.GET.get("nombre")
         tipo = self.request.GET.get("tipo")
+        orden = self.request.GET.get("orden")
 
+        # --- Filtros ---
         if provincia:
             queryset = queryset.filter(provincia__icontains=provincia)
 
@@ -25,6 +27,16 @@ class GimnasioListView(ListView):
 
         if tipo:
             queryset = queryset.filter(tipo_gimnasio__id=tipo)
+
+        # --- Orden ---
+        if orden == "nombre_asc":
+            queryset = queryset.order_by("nombre")
+        elif orden == "nombre_desc":
+            queryset = queryset.order_by("-nombre")
+        elif orden == "provincia_asc":
+            queryset = queryset.order_by("provincia")
+        elif orden == "provincia_desc":
+            queryset = queryset.order_by("-provincia")
 
         return queryset
 

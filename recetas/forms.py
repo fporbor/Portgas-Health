@@ -5,7 +5,7 @@ from .models import Receta
 class RecetaForm(forms.ModelForm):
     class Meta:
         model = Receta
-        fields = ['nombre', 'proteina', 'calorias', 'objetivo', 'alergia', 'descripcion']
+        fields = ['nombre', 'proteina', 'calorias', 'objetivo', 'alergia', 'descripcion', 'video_url']
         widgets = {
             'nombre': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -27,5 +27,9 @@ class RecetaForm(forms.ModelForm):
                 'class': 'form-control',
                 'rows': 4,
                 'placeholder': 'Descripción de la receta...'
+            }),
+            'video_url': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'URL del video de YouTube (opcional)'
             }),
         }
