@@ -21,7 +21,6 @@
   <div class="filter-bar__inner">
 
     <div class="filter-search">
-      <i class="bi bi-search filter-search__icon"></i>
       <input type="text" name="q" placeholder="Buscar ejercicio…"
              value="{{ request.GET.q }}" autocomplete="off">
     </div>
@@ -97,17 +96,6 @@
       <div class="col">
         <div class="recipe-card exercise-card h-100">
 
-          <!-- TIRA DE COLOR (CORREGIDA) -->
-          <div class="recipe-card__strip
-            {% if ejercicio.tipo_ejercicio.nombre == 'Fuerza' %}strip--fuerza
-            {% elif ejercicio.tipo_ejercicio.nombre == 'Cardio' %}strip--cardio
-            {% elif ejercicio.tipo_ejercicio.nombre == 'Resistencia' %}strip--resistencia
-            {% elif ejercicio.tipo_ejercicio.nombre == 'Movilidad' %}strip--movil
-            {% elif ejercicio.tipo_ejercicio.nombre == 'Rehabilitación' %}strip--rehab
-            {% elif ejercicio.tipo_ejercicio.nombre == 'Hipertrofia' %}strip--hipertrofia
-            {% else %}strip--default{% endif %}">
-          </div>
-
           <div class="recipe-card__body">
 
             <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
@@ -115,8 +103,10 @@
               <div class="d-flex align-items-center gap-2">
                   <h5 class="recipe-card__title">{{ ejercicio.nombre }}</h5>
 
-                  {% if ejercicio.autor == user %}
-                      <span class="badge bg-primary">Mío</span>
+                  {% if request.user.is_authenticated and receta.autor_id == request.user.id %}
+                    <span class="badge rounded-pill bg-primary d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-person-fill-check"></i> Personal
+                    </span>
                   {% endif %}
               </div>
 

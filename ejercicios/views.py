@@ -1,105 +1,157 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
+from django.shortcuts import redirect
 from .models import Ejercicio
 from .forms import EjercicioForm
 
 
-def lista_ejercicios(request):
-    ejercicios = Ejercicio.objects.select_related('tipo_ejercicio', 'autor') \
-                                  .prefetch_related('grupo_muscular')
+# -----------------------------
+# LISTA
+# -----------------------------
+class EjercicioListView(ListView):
+    model = Ejercicio
+    template_name = "ejercicios/ejec_lista.html"
+    context_object_name = "ejercicios"
 
-    # ─── Filtros ───────────────────────────────────────────────
-    q = request.GET.get("q")
-    tipo = request.GET.get("tipo")
-    grupo = request.GET.get("grupo")
+    def get(self, request, *args, **kwargs):
+        # Limpiar la sesión al volver a la lista
+        request.session.pop('volver_a', None)
+        return super().get(request, *args, **kwargs)
 
-    if q:
-        ejercicios = ejercicios.filter(nombre__icontains=q)
+    def get_queryset(self):
+        ejercicios = (
+            Ejercicio.objects
+            .select_related('tipo_ejercicio', 'autor')
+            .prefetch_related('grupo_muscular')
+        )
 
-    if tipo:
-        ejercicios = ejercicios.filter(tipo_ejercicio__nombre=tipo)
+        q = self.request.GET.get("q")
+        tipo = self.request.GET.get("tipo")
+        grupo = self.request.GET.get("grupo")
 
-    if grupo:
-        ejercicios = ejercicios.filter(grupo_muscular__nombre=grupo)
+        if q:
+            ejercicios = ejercicios.filter(nombre__icontains=q)
 
-    # ─── Ordenamiento ───────────────────────────────────────
-    orden = request.GET.get("orden")
-    if orden == "nombre_asc":
-        ejercicios = ejercicios.order_by("nombre")
-    elif orden == "nombre_desc":
-        ejercicios = ejercicios.order_by("-nombre")
-    elif orden == "tipo_asc":
-        ejercicios = ejercicios.order_by("tipo_ejercicio__nombre")
-    elif orden == "tipo_desc":
-        ejercicios = ejercicios.order_by("-tipo_ejercicio__nombre")
-    elif orden == "grupo_asc":
-        ejercicios = ejercicios.order_by("grupo_muscular__nombre")
-    elif orden == "grupo_desc":
-        ejercicios = ejercicios.order_by("-grupo_muscular__nombre")
+        if tipo:
+            ejercicios = ejercicios.filter(tipo_ejercicio__nombre=tipo)
 
-    return render(request, 'ejercicios/ejec_lista.html', {
-        'ejercicios': ejercicios,
-    })
+        if grupo:
+            ejercicios = ejercicios.filter(grupo_muscular__nombre=grupo)
 
+        orden = self.request.GET.get("orden")
+        if orden == "nombre_asc":
+            ejercicios = ejercicios.order_by("nombre")
+        elif orden == "nombre_desc":
+            ejercicios = ejercicios.order_by("-nombre")
+        elif orden == "tipo_asc":
+            ejercicios = ejercicios.order_by("tipo_ejercicio__nombre")
+        elif orden == "tipo_desc":
+            ejercicios = ejercicios.order_by("-tipo_ejercicio__nombre")
+        elif orden == "grupo_asc":
+            ejercicios = ejercicios.order_by("grupo_muscular__nombre")
+        elif orden == "grupo_desc":
+            ejercicios = ejercicios.order_by("-grupo_muscular__nombre")
 
-
-def detalle_ejercicio(request, pk):
-    ejercicio = get_object_or_404(
-        Ejercicio.objects.select_related('tipo_ejercicio', 'autor')
-                         .prefetch_related('grupo_muscular'),
-        pk=pk
-    )
-    return render(request, 'ejercicios/ejec_detalle.html', {'ejercicio': ejercicio})
-
-
-@login_required
-def crear_ejercicio(request):
-    if request.method == 'POST':
-        form = EjercicioForm(request.POST)
-        if form.is_valid():
-            ejercicio = form.save(commit=False)
-            ejercicio.autor = request.user
-            ejercicio.save()
-            form.save_m2m()  # Necesario para guardar ManyToMany (grupo_muscular)
-            messages.success(request, 'Ejercicio creado correctamente.')
-            return redirect('ejercicios:detalle', pk=ejercicio.pk)
-    else:
-        form = EjercicioForm()
-    return render(request, 'ejercicios/ejec_crear.html', {'form': form, 'accion': 'Crear'})
+        return ejercicios
 
 
-@login_required
-def editar_ejercicio(request, pk):
-    ejercicio = get_object_or_404(Ejercicio, pk=pk)
+# -----------------------------
+# DETALLE
+# -----------------------------
+class EjercicioDetailView(DetailView):
+    model = Ejercicio
+    template_name = "ejercicios/ejec_detalle.html"
+    context_object_name = "ejercicio"
 
-    if ejercicio.autor != request.user:
-        messages.error(request, 'No tienes permiso para editar este ejercicio.')
-        return redirect('ejercicios:detalle', pk=pk)
+    def get(self, request, *args, **kwargs):
+        referer = request.META.get("HTTP_REFERER")
 
-    if request.method == 'POST':
-        form = EjercicioForm(request.POST, instance=ejercicio)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Ejercicio actualizado correctamente.')
-            return redirect('ejercicios:detalle', pk=ejercicio.pk)
-    else:
-        form = EjercicioForm(instance=ejercicio)
-    return render(request, 'ejercicios/ejec_crear.html', {'form': form, 'accion': 'Editar', 'ejercicio': ejercicio})
+        # Guardar solo si vienes de una lista, no de editar/eliminar
+        if referer and "editar" not in referer and "eliminar" not in referer:
+            if "volver_a" not in request.session:
+                request.session["volver_a"] = referer
+
+        return super().get(request, *args, **kwargs)
 
 
-@login_required
-def eliminar_ejercicio(request, pk):
-    ejercicio = get_object_or_404(Ejercicio, pk=pk)
+# -----------------------------
+# CREAR
+# -----------------------------
+class EjercicioCreateView(LoginRequiredMixin, CreateView):
+    model = Ejercicio
+    form_class = EjercicioForm
+    template_name = "ejercicios/ejec_crear.html"
 
-    if ejercicio.autor != request.user:
-        messages.error(request, 'No tienes permiso para eliminar este ejercicio.')
-        return redirect('ejercicios:detalle', pk=pk)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["accion"] = "Crear"
+        context["ejercicio"] = None
+        return context
 
-    if request.method == 'POST':
-        ejercicio.delete()
-        messages.success(request, 'Ejercicio eliminado correctamente.')
-        return redirect('ejercicios:lista')
+    def form_valid(self, form):
+        ejercicio = form.save(commit=False)
+        ejercicio.autor = self.request.user
+        ejercicio.save()
+        form.save_m2m()
+        messages.success(self.request, "Ejercicio creado correctamente.")
+        return redirect("ejercicios:detalle", pk=ejercicio.pk)
 
-    return render(request, 'ejercicios/ejec_eliminar.html', {'ejercicio': ejercicio})
+
+# -----------------------------
+# EDITAR
+# -----------------------------
+class EjercicioUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Ejercicio
+    form_class = EjercicioForm
+    template_name = "ejercicios/ejec_crear.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["accion"] = "Editar"
+        context["ejercicio"] = self.get_object()
+        return context
+
+    def test_func(self):
+        ejercicio = self.get_object()
+        user = self.request.user
+
+        # Autor, admin o superusuario
+        return (
+            ejercicio.autor is None or
+            ejercicio.autor == user or
+            user.is_staff or
+            user.is_superuser
+        )
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, "Ejercicio actualizado correctamente.")
+        return redirect("ejercicios:detalle", pk=self.get_object().pk)
+
+
+# -----------------------------
+# ELIMINAR
+# -----------------------------
+class EjercicioDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Ejercicio
+    template_name = "ejercicios/ejec_eliminar.html"
+    success_url = reverse_lazy("ejercicios:lista")
+
+    def test_func(self):
+        ejercicio = self.get_object()
+        user = self.request.user
+
+        return (
+            ejercicio.autor is None or
+            ejercicio.autor == user or
+            user.is_staff or
+            user.is_superuser
+        )
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, "Ejercicio eliminado correctamente.")
+        return super().delete(request, *args, **kwargs)
+
 

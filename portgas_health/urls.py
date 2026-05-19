@@ -18,7 +18,9 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
-from usuarios.views import registro
+from django.conf import settings
+from django.conf.urls.static import static
+from usuarios.views import registro, CustomLoginView
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='index'),
@@ -27,7 +29,7 @@ urlpatterns = [
     path("ejercicios/", include("ejercicios.urls")),
     path("recetas/", include("recetas.urls")),
     path('usuarios/', include('usuarios.urls')),
-    path('login/',    auth_views.LoginView.as_view(),  name='login'),
+    path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
-    path('registro/', registro,                        name='registro'),
-]
+    path('registro/', registro, name='registro'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

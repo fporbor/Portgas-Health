@@ -3,64 +3,112 @@
 {% block title %}{{ gimnasio.nombre }}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow-sm">
-            <div class="card-body">
 
-                <h1 class="card-title">{{ gimnasio.nombre }}</h1>
+<div class="gym-detail">
 
-                <!-- VIDEO -->
-                {% if gimnasio.embed_url %}
-                <div class="video-container mb-3">
-                    <iframe
-                        src="{{ gimnasio.embed_url }}"
-                        frameborder="0"
-                        allowfullscreen>
-                    </iframe>
-                </div>
-                {% endif %}
-
-                <p><strong>Provincia:</strong> {{ gimnasio.provincia }}</p>
-                <p><strong>Localidad:</strong> {{ gimnasio.localidad }}</p>
-                <p><strong>Teléfono:</strong> {{ gimnasio.telefono }}</p>
-                <p><strong>Email:</strong> {{ gimnasio.email }}</p>
-                <p><strong>Tipo:</strong> {{ gimnasio.tipo_gimnasio }}</p>
-
-                <!-- BOTÓN DE LIKE -->
-                <form action="{% url 'usuarios:toggle_like' 'gimnasio' gimnasio.id %}" method="post" class="mt-3">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-danger">
-                        ❤️ {{ gimnasio.likes.count }}
-                    </button>
-                </form>
-
-            </div>
-
-            <div class="card-footer bg-transparent">
-                <a href="{% url 'gimnasios:lista_gimnasios' %}" class="btn btn-outline-secondary">← Volver</a>
-            </div>
-        </div>
+  <!-- HERO -->
+  <div class="gym-detail-hero">
+    {% if gimnasio.foto %}
+      <img src="{{ gimnasio.foto }}" alt="{{ gimnasio.nombre }}" class="gym-detail-hero-img">
+    {% else %}
+      <div class="gym-detail-hero-placeholder">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1" opacity="0.3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>
+        </svg>
+      </div>
+    {% endif %}
+    <div class="gym-detail-hero-overlay">
+      <span class="gym-detail-badge">{{ gimnasio.tipo_gimnasio }}</span>
+      <h1 class="gym-detail-title">{{ gimnasio.nombre }}</h1>
+      <p class="gym-detail-location">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M8 0a5.53 5.53 0 0 0-5.5 5.5c0 4.813 5.5 10.5 5.5 10.5S13.5 10.313 13.5 5.5A5.53 5.53 0 0 0 8 0zm0 8a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+        </svg>
+        {{ gimnasio.localidad }}, {{ gimnasio.provincia }}
+      </p>
     </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="gym-detail-body">
+
+    <!-- INFO GRID -->
+    <div class="gym-detail-section">
+      <h2 class="gym-detail-section-title">Información de contacto</h2>
+      <div class="gym-detail-grid">
+
+        <div class="gym-detail-item">
+          <span class="gym-detail-label">Provincia</span>
+          <span class="gym-detail-value">{{ gimnasio.provincia }}</span>
+        </div>
+
+        <div class="gym-detail-item">
+          <span class="gym-detail-label">Localidad</span>
+          <span class="gym-detail-value">{{ gimnasio.localidad }}</span>
+        </div>
+
+        <div class="gym-detail-item">
+          <span class="gym-detail-label">Teléfono</span>
+          <span class="gym-detail-value">
+            <a href="tel:{{ gimnasio.telefono }}">{{ gimnasio.telefono }}</a>
+          </span>
+        </div>
+
+        <div class="gym-detail-item">
+          <span class="gym-detail-label">Email</span>
+          <span class="gym-detail-value">
+            <a href="mailto:{{ gimnasio.email }}">{{ gimnasio.email }}</a>
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="gym-detail-actions">
+
+      <form action="{% url 'usuarios:toggle_like' 'gimnasio' gimnasio.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="gym-like-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+          </svg>
+          {{ gimnasio.likes.count }} Me gusta
+        </button>
+      </form>
+
+      {% if request.user.is_staff %}
+        <div class="gym-staff-actions">
+          <a href="{% url 'gimnasios:gym_editar' gimnasio.pk %}" class="btn-fire">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+            </svg>
+            Editar
+          </a>
+          <a href="{% url 'gimnasios:gym_eliminar' gimnasio.pk %}" class="btn-danger-outline">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+              <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+            </svg>
+            Eliminar
+          </a>
+        </div>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="gym-detail-footer">
+    <a href="{{ request.session.volver_a|default:'/' }}" class="btn-back">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+      </svg>
+      Volver
+    </a>
+  </div>
+
 </div>
 
-<style>
-/* VIDEO RESPONSIVE */
-.video-container {
-    position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
-    overflow: hidden;
-    border-radius: 8px;
-}
-
-.video-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-</style>
 {% endblock %}
-

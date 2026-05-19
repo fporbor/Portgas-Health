@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Editar {{ gimnasio.nombre }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <h4 class="mb-0">Editar gimnasio</h4>
+      </div>
+      <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            <a href="{% url 'gimnasios:gym_detalle' gimnasio.pk %}" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

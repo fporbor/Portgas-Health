@@ -22,7 +22,6 @@
 
     <!-- Search -->
     <div class="filter-search">
-      <i class="bi bi-search filter-search__icon"></i>
       <input type="text" name="q" placeholder="Buscar receta…"
              value="{{ request.GET.q }}" autocomplete="off">
     </div>
@@ -94,27 +93,18 @@
       <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#caloriasCollapse">
         Calorías ▾
       </button>
-
       <div class="collapse mt-2" id="caloriasCollapse">
-
-        <div class="range-wrapper">
+        <div class="range-row">
           <input id="calMin" type="range" min="0" max="1500" step="10"
-                name="cal_min"
-                value="{{ request.GET.cal_min|default:0 }}"
-                class="sc-wallapop-range-selector">
-
+                name="cal_min" value="{{ request.GET.cal_min|default:0 }}">
           <input id="calMax" type="range" min="0" max="1500" step="10"
-                name="cal_max"
-                value="{{ request.GET.cal_max|default:1500 }}"
-                class="sc-wallapop-range-selector">
+                name="cal_max" value="{{ request.GET.cal_max|default:1500 }}">
         </div>
-
         <div class="range-values">
           <span id="calMinValue">{{ request.GET.cal_min|default:0 }} kcal</span>
           —
           <span id="calMaxValue">{{ request.GET.cal_max|default:1500 }} kcal</span>
         </div>
-
       </div>
     </div>
 
@@ -125,27 +115,18 @@
       <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#proteinaCollapse">
         Proteína ▾
       </button>
-
       <div class="collapse mt-2" id="proteinaCollapse">
-
-        <div class="range-wrapper">
+        <div class="range-row">
           <input id="proMin" type="range" min="0" max="200" step="5"
-                name="pro_min"
-                value="{{ request.GET.pro_min|default:0 }}"
-                class="sc-wallapop-range-selector">
-
+                name="pro_min" value="{{ request.GET.pro_min|default:0 }}">
           <input id="proMax" type="range" min="0" max="200" step="5"
-                name="pro_max"
-                value="{{ request.GET.pro_max|default:200 }}"
-                class="sc-wallapop-range-selector">
+                name="pro_max" value="{{ request.GET.pro_max|default:200 }}">
         </div>
-
         <div class="range-values">
           <span id="proMinValue">{{ request.GET.pro_min|default:0 }} g</span>
           —
           <span id="proMaxValue">{{ request.GET.pro_max|default:200 }} g</span>
         </div>
-
       </div>
     </div>
 
@@ -198,13 +179,7 @@
       <div class="col">
         <div class="recipe-card h-100">
 
-          <!-- Colored top strip based on objetivo -->
-          <div class="recipe-card__strip
-            {% if receta.objetivo.nombre == 'volumen' %}strip--volumen
-            {% elif receta.objetivo.nombre == 'definicion' %}strip--definicion
-            {% elif receta.objetivo.nombre == 'perder_peso' %}strip--perder
-            {% else %}strip--default{% endif %}">
-          </div>
+      
 
           <div class="recipe-card__body">
             <!-- Title + badge -->
@@ -213,8 +188,11 @@
                   <h5 class="recipe-card__title">{{ receta.nombre }}</h5>
 
                   {% if request.user.is_authenticated and receta.autor_id == request.user.id %}
-                      <span class="badge bg-primary">Mía</span>
+                    <span class="badge rounded-pill bg-primary d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-person-fill-check"></i> Personal
+                    </span>
                   {% endif %}
+
               </div>
 
               {% if receta.objetivo %}
@@ -285,5 +263,6 @@
 {% load static %}
 
 <script src="{% static 'app/recetas_filtros.js' %}"></script>
+<script src="{% static 'app/range-sliders.js' %}"></script>
 
 {% endblock %}

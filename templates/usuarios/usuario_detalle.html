@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+
+{% block title %}Perfil de {{ usuario.username }}{% endblock %}
+
+{% block content %}
+
+<!-- ── PERFIL HEADER ──────────────────────────────────── -->
+<div class="profile-hero">
+    <div class="profile-hero__bar"></div>
+    <div class="profile-hero__body">
+
+        <!-- Avatar -->
+        <div class="profile-avatar">
+            <span class="profile-avatar__initials">
+                {{ usuario.first_name|first|upper }}{{ usuario.last_name|first|upper }}
+            </span>
+            <span class="profile-avatar__ring"></span>
+        </div>
+
+        <!-- Info principal -->
+        <div class="profile-meta">
+            <h2 class="profile-username">{{ usuario.username }}</h2>
+            <p class="profile-fullname">
+                {{ usuario.first_name }} {{ usuario.last_name }} {{ usuario.apellido2 }}
+            </p>
+        </div>
+
+        <!-- Botón editar (solo si es el propio usuario) -->
+        {% if request.user == usuario %}
+        <a href="{% url 'usuarios:usuario_editar' usuario.pk %}" class="btn-edit-profile">
+            <i class="bi bi-pencil-square"></i> Editar perfil
+        </a>
+        {% endif %}
+
+    </div>
+</div>
+
+<!-- ── DATOS DE CONTACTO ─────────────────────────────── -->
+<div class="profile-details-grid">
+
+    <div class="profile-detail-item">
+        <span class="detail-icon"><i class="bi bi-envelope"></i></span>
+        <div>
+            <span class="detail-label">Email</span>
+            <span class="detail-value">{{ usuario.email|default:"—" }}</span>
+        </div>
+    </div>
+
+    <div class="profile-detail-item">
+        <span class="detail-icon"><i class="bi bi-telephone"></i></span>
+        <div>
+            <span class="detail-label">Teléfono</span>
+            <span class="detail-value">{{ usuario.telefono|default:"—" }}</span>
+        </div>
+    </div>
+
+    <div class="profile-detail-item">
+        <span class="detail-icon"><i class="bi bi-calendar3"></i></span>
+        <div>
+            <span class="detail-label">Fecha de nacimiento</span>
+            <span class="detail-value">{{ usuario.fecha_nacimiento|default:"—" }}</span>
+        </div>
+    </div>
+
+</div>
+
+<!-- ── LIKES ─────────────────────────────────────────── -->
+<div class="likes-section">
+
+    <h3 class="likes-title">
+        <i class="bi bi-heart-fill"></i> Likes del usuario
+    </h3>
+
+    <!-- NAV TABS -->
+    <div class="profile-tabs" id="likeTabs" role="tablist">
+        <button class="profile-tab active" data-bs-toggle="tab" data-bs-target="#todos" role="tab">
+            Todos
+        </button>
+        <button class="profile-tab" data-bs-toggle="tab" data-bs-target="#gimnasios" role="tab">
+            <i class="bi bi-building"></i> Gimnasios
+        </button>
+        <button class="profile-tab" data-bs-toggle="tab" data-bs-target="#ejercicios" role="tab">
+            <i class="bi bi-lightning-charge"></i> Ejercicios
+        </button>
+        <button class="profile-tab" data-bs-toggle="tab" data-bs-target="#recetas" role="tab">
+            <i class="bi bi-egg-fried"></i> Recetas
+        </button>
+    </div>
+
+    <!-- TAB CONTENT -->
+    <div class="tab-content profile-tab-content">
+
+        <div class="tab-pane fade show active" id="todos" role="tabpanel">
+            {% include "usuarios/likes_list.html" with likes=likes %}
+        </div>
+
+        <div class="tab-pane fade" id="gimnasios" role="tabpanel">
+            {% include "usuarios/likes_list.html" with likes=likes_gimnasios %}
+        </div>
+
+        <div class="tab-pane fade" id="ejercicios" role="tabpanel">
+            {% include "usuarios/likes_list.html" with likes=likes_ejercicios %}
+        </div>
+
+        <div class="tab-pane fade" id="recetas" role="tabpanel">
+            {% include "usuarios/likes_list.html" with likes=likes_recetas %}
+        </div>
+
+    </div>
+</div>
+
+<!-- ── ESTILOS ───────────────────────────────────────── -->
+<style>
+
+/* ── HERO ───────────────────────────────────────────── */
+.profile-hero {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+    animation: fadeUp 0.5s ease both;
+}
+
+.profile-hero__bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--fire-dim), var(--fire), var(--ember), var(--fire));
+    background-size: 200% 100%;
+    animation: bar-slide 3s linear infinite;
+}
+
+@keyframes bar-slide {
+    0%   { background-position: 0% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.profile-hero__body {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.75rem 2rem;
+    flex-wrap: wrap;
+}
+
+/* ── AVATAR ─────────────────────────────────────────── */
+.profile-avatar {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.profile-avatar__initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 2px solid var(--border);
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    letter-spacing: 0.05em;
+    color: var(--fire);
+    position: relative;
+    z-index: 1;
+}
+
+.profile-avatar__ring {
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    background: conic-gradient(var(--fire) 0%, var(--ember) 40%, transparent 60%);
+    animation: spin-ring 6s linear infinite;
+    z-index: 0;
+    opacity: 0.5;
+}
+
+@keyframes spin-ring {
+    to { transform: rotate(360deg); }
+}
+
+/* ── META ───────────────────────────────────────────── */
+.profile-meta {
+    flex: 1;
+    min-width: 0;
+}
+
+.profile-username {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    letter-spacing: 0.04em;
+    background: linear-gradient(135deg, var(--white) 30%, var(--ember) 70%, var(--fire) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.25rem;
+}
+
+.profile-fullname {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* ── BOTÓN EDITAR ───────────────────────────────────── */
+.btn-edit-profile {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+    color: var(--white);
+    background: linear-gradient(135deg, var(--fire), var(--fire-dim));
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.55rem 1.4rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    text-decoration: none;
+    box-shadow: 0 4px 18px var(--fire-glow);
+    transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+    white-space: nowrap;
+    margin-left: auto;
+}
+.btn-edit-profile:hover {
+    background: linear-gradient(135deg, var(--fire-dim), #a33a0c);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px #ff5c1a55;
+    color: var(--white);
+}
+.btn-edit-profile:active { transform: translateY(0); }
+
+/* ── DATOS DE CONTACTO ──────────────────────────────── */
+.profile-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.5s 0.1s ease both;
+}
+
+.profile-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--surface);
+    padding: 1.1rem 1.4rem;
+    transition: background var(--transition);
+}
+.profile-detail-item:hover {
+    background: var(--surface-2);
+}
+
+.detail-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--fire);
+    font-size: 0.95rem;
+    flex-shrink: 0;
+    transition: box-shadow var(--transition);
+}
+.profile-detail-item:hover .detail-icon {
+    box-shadow: 0 0 12px var(--fire-glow);
+}
+
+.detail-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--text-dim);
+    margin-bottom: 0.1rem;
+}
+
+.detail-value {
+    display: block;
+    font-size: 0.92rem;
+    color: var(--text);
+    font-weight: 400;
+}
+
+/* ── LIKES SECTION ──────────────────────────────────── */
+.likes-section {
+    animation: fadeUp 0.5s 0.15s ease both;
+}
+
+.likes-title {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    letter-spacing: 0.05em;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+.likes-title i { color: var(--fire); font-size: 1.1rem; }
+
+/* ── TABS ───────────────────────────────────────────── */
+.profile-tabs {
+    display: flex;
+    gap: 0.25rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.profile-tab {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.65rem 1.1rem;
+    margin-bottom: -1px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: color var(--transition), border-color var(--transition), background var(--transition);
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.profile-tab i { font-size: 0.85rem; opacity: 0.7; transition: opacity var(--transition); }
+
+.profile-tab:hover {
+    color: var(--text);
+    background: var(--surface-2);
+}
+.profile-tab:hover i { opacity: 1; }
+
+.profile-tab.active {
+    color: var(--white);
+    border-bottom-color: var(--fire);
+    background: var(--surface);
+    box-shadow: 0 0 12px var(--fire-glow);
+}
+.profile-tab.active i { opacity: 1; color: var(--fire); }
+
+/* ── RESPONSIVE ─────────────────────────────────────── */
+@media (max-width: 576px) {
+    .profile-hero__body {
+        padding: 1.25rem;
+        gap: 1rem;
+    }
+    .btn-edit-profile {
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
+    }
+    .profile-tabs { gap: 0; }
+    .profile-tab { font-size: 0.75rem; padding: 0.55rem 0.75rem; }
+}
+
+</style>
+
+{% endblock %}
+

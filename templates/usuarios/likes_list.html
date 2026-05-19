@@ -1,0 +1,135 @@
+{% if likes %}
+    <ul class="likes-list">
+        {% for like in likes %}
+            <li class="likes-item">
+                <a href="{{ like.content_object.get_absolute_url }}" class="likes-link">
+                    <span class="likes-type">{{ like.content_type.model|title }}</span>
+                    <span class="likes-name">{{ like.content_object }}</span>
+                    <span class="likes-date">
+                        <i class="bi bi-clock"></i>
+                        {{ like.fecha|date:"d/m/Y H:i" }}
+                    </span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p class="likes-empty">No hay likes en esta categoría.</p>
+{% endif %}
+
+<style>
+.likes-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0;
+    margin: 0;
+}
+
+.likes-item {
+    animation: fadeUp 0.4s ease both;
+}
+.likes-item:nth-child(1)  { animation-delay: 0.04s; }
+.likes-item:nth-child(2)  { animation-delay: 0.08s; }
+.likes-item:nth-child(3)  { animation-delay: 0.12s; }
+.likes-item:nth-child(4)  { animation-delay: 0.16s; }
+.likes-item:nth-child(5)  { animation-delay: 0.20s; }
+.likes-item:nth-child(6)  { animation-delay: 0.24s; }
+.likes-item:nth-child(7)  { animation-delay: 0.28s; }
+.likes-item:nth-child(8)  { animation-delay: 0.32s; }
+
+.likes-link {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.9rem 1.2rem;
+    text-decoration: none;
+    color: var(--text);
+    position: relative;
+    overflow: hidden;
+    transition: background var(--transition), border-color var(--transition),
+                transform var(--transition), box-shadow var(--transition);
+}
+
+/* barra lateral fire al hover */
+.likes-link::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--fire);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform var(--transition);
+    border-radius: 0 2px 2px 0;
+}
+
+.likes-link:hover {
+    background: var(--surface-2);
+    border-color: var(--fire-dim);
+    transform: translateX(4px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+    color: var(--white);
+}
+.likes-link:hover::before { transform: scaleY(1); }
+
+/* badge tipo (Receta / Ejercicio / Gimnasio) */
+.likes-type {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--fire);
+    background: var(--fire-glow);
+    border: 1px solid var(--fire-dim);
+    border-radius: 6px;
+    padding: 0.2rem 0.55rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    width: 90px;
+    text-align: center;
+}
+
+/* nombre del elemento */
+.likes-name {
+    flex: 1;
+    font-size: 0.93rem;
+    font-weight: 500;
+    color: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* fecha */
+.likes-date {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-left: auto;
+    transition: color var(--transition);
+}
+.likes-link:hover .likes-date { color: var(--text-muted); }
+.likes-date i { font-size: 0.75rem; }
+
+/* estado vacío */
+.likes-empty {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 2rem;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    margin: 0;
+}
+</style>

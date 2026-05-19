@@ -1,12 +1,18 @@
 from django.urls import path
-from . import views
+from .views import (
+    RecetaListView,
+    RecetaDetailView,
+    RecetaCreateView,
+    RecetaUpdateView,
+    RecetaDeleteView,
+)
 
 app_name = 'recetas'
 
 urlpatterns = [
-    path('', views.lista_recetas, name='lista'),
-    path('<int:pk>/', views.detalle_receta, name='detalle'),
-    path('crear/', views.crear_receta, name='crear'),
-    path('<int:pk>/editar/', views.editar_receta, name='editar'),
-    path('<int:pk>/eliminar/', views.eliminar_receta, name='eliminar'),
+    path('', RecetaListView.as_view(), name='lista'),
+    path('<int:pk>/', RecetaDetailView.as_view(), name='detalle'),
+    path('crear/', RecetaCreateView.as_view(), name='crear'),
+    path('<int:pk>/editar/', RecetaUpdateView.as_view(), name='editar'),
+    path('<int:pk>/eliminar/', RecetaDeleteView.as_view(), name='eliminar'),
 ]

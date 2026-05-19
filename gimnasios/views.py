@@ -1,5 +1,8 @@
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
 from .models import Gimnasio, TipoGimnasio
+from .forms import GimnasioForm
+
 
 class GimnasioListView(ListView):
     model = Gimnasio
@@ -15,7 +18,6 @@ class GimnasioListView(ListView):
         tipo = self.request.GET.get("tipo")
         orden = self.request.GET.get("orden")
 
-        # --- Filtros ---
         if provincia:
             queryset = queryset.filter(provincia__icontains=provincia)
 
@@ -28,7 +30,6 @@ class GimnasioListView(ListView):
         if tipo:
             queryset = queryset.filter(tipo_gimnasio__id=tipo)
 
-        # --- Orden ---
         if orden == "nombre_asc":
             queryset = queryset.order_by("nombre")
         elif orden == "nombre_desc":
@@ -39,6 +40,10 @@ class GimnasioListView(ListView):
             queryset = queryset.order_by("-provincia")
 
         return queryset
+    
+    def get(self, request, *args, **kwargs):
+        request.session.pop('volver_a', None)
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -50,3 +55,31 @@ class GimnasioDetailView(DetailView):
     model = Gimnasio
     template_name = "gimnasios/gym_detalle.html"
     context_object_name = "gimnasio"
+
+    def get(self, request, *args, **kwargs):
+        if 'volver_a' not in request.session:
+            request.session['volver_a'] = request.META.get('HTTP_REFERER')
+        return super().get(request, *args, **kwargs)
+
+class GimnasioCreateView(CreateView):
+    model = Gimnasio
+    form_class = GimnasioForm
+    template_name = "gimnasios/gym_crear.html"
+
+    def get_success_url(self):
+        return reverse_lazy("gimnasios:gym_detalle", args=[self.object.pk])
+
+
+class GimnasioUpdateView(UpdateView):
+    model = Gimnasio
+    form_class = GimnasioForm
+    template_name = "gimnasios/gym_editar.html"
+
+    def get_success_url(self):
+        return reverse_lazy("gimnasios:gym_detalle", args=[self.object.pk])
+
+
+class GimnasioDeleteView(DeleteView):
+    model = Gimnasio
+    template_name = "gimnasios/gym_eliminar.html"
+    success_url = reverse_lazy("gimnasios:gym_lista")

@@ -3,55 +3,86 @@
 {% block title %}Lista de Gimnasios{% endblock %}
 
 {% block content %}
-<h1>Gimnasios</h1>
 
-<form method="GET">
-    <input type="text" name="nombre" placeholder="Nombre" value="{{ request.GET.nombre }}">
-    <input type="text" name="provincia" placeholder="Provincia" value="{{ request.GET.provincia }}">
-    <input type="text" name="localidad" placeholder="Localidad" value="{{ request.GET.localidad }}">
 
-    <select name="tipo">
-        <option value="">-- Tipo de gimnasio --</option>
-        {% for t in tipos %}
-            <option value="{{ t.id }}" {% if request.GET.tipo == t.id|stringformat:"s" %}selected{% endif %}>
-                {{ t.nombre }}
-            </option>
-        {% endfor %}
-    </select>
-    <select name="orden">
-        <option value="">Ordenar por…</option>
+<div class="d-flex align-items-end justify-content-between gap-3 mb-4 flex-wrap">
+  <div>
+    <p class="section-eyebrow"><i class="bi bi-geo-alt"></i> Lugar</p>
+    <h2 class="section-title">Gimnasios</h2>
+  </div>
+  {% if request.user.is_staff %}
+    <a href="{% url 'gimnasios:gym_crear' %}" class="btn-fire">
+      <i class="bi bi-plus-lg"></i> Nuevo gimnasio
+    </a>
+  {% endif %}
+</div>
 
-        <option value="nombre_asc"  {% if request.GET.orden == "nombre_asc" %}selected{% endif %}>
-            Nombre (A → Z)
-        </option>
 
-        <option value="nombre_desc" {% if request.GET.orden == "nombre_desc" %}selected{% endif %}>
-            Nombre (Z → A)
-        </option>
+    <div class="gym-filters">
 
-        <option value="provincia_asc"  {% if request.GET.orden == "provincia_asc" %}selected{% endif %}>
-            Provincia (A → Z)
-        </option>
+        <form method="GET">
+            <input type="text" name="nombre" placeholder="Nombre" value="{{ request.GET.nombre }}">
+            <input type="text" name="provincia" placeholder="Provincia" value="{{ request.GET.provincia }}">
+            <input type="text" name="localidad" placeholder="Localidad" value="{{ request.GET.localidad }}">
 
-        <option value="provincia_desc" {% if request.GET.orden == "provincia_desc" %}selected{% endif %}>
-            Provincia (Z → A)
-        </option>
-    </select>
+            <select name="tipo">
+                <option value="">-- Tipo de gimnasio --</option>
+                {% for t in tipos %}
+                    <option value="{{ t.id }}" {% if request.GET.tipo == t.id|stringformat:"s" %}selected{% endif %}>
+                        {{ t.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+            <select name="orden">
+                <option value="">Ordenar por…</option>
 
-    <button type="submit">Filtrar</button>
-</form>
+                <option value="nombre_asc"  {% if request.GET.orden == "nombre_asc" %}selected{% endif %}>
+                    Nombre (A → Z)
+                </option>
 
-<ul>
-    {% for g in gimnasios %}
-        <li>
-            <a href="{% url 'gimnasios:detalle_gimnasio' g.id %}">
-                {{ g.nombre }} - {{ g.localidad }} ({{ g.provincia }})
-            </a>
-        </li>
-    {% empty %}
-        <li>No hay gimnasios que coincidan con la búsqueda.</li>
-    {% endfor %}
-</ul>
+                <option value="nombre_desc" {% if request.GET.orden == "nombre_desc" %}selected{% endif %}>
+                    Nombre (Z → A)
+                </option>
+
+                <option value="provincia_asc"  {% if request.GET.orden == "provincia_asc" %}selected{% endif %}>
+                    Provincia (A → Z)
+                </option>
+
+                <option value="provincia_desc" {% if request.GET.orden == "provincia_desc" %}selected{% endif %}>
+                    Provincia (Z → A)
+                </option>
+            </select>
+
+            <button type="submit">Filtrar</button>
+        </form>
+    </div>
+    <br>
+    <div class="gym-list">
+        <ul class="lista-gimnasios">
+            {% for g in gimnasios %}
+                <li class="gym-item">
+                    <a href="{% url 'gimnasios:gym_detalle' g.id %}" class="gym-link">
+                        
+                        {% if g.foto %}
+                            <img src="{{ g.foto }}" alt="{{ g.nombre }}" class="gym-img">
+                        {% endif %}
+
+                        <div class="gym-info">
+                            <h3 class="gym-nombre">{{ g.nombre }}</h3>
+                            <p class="gym-datos">
+                                {{ g.localidad }} ({{ g.provincia }})<br>
+                                {{ g.direccion }}<br>
+                                Tel: {{ g.telefono }}
+                            </p>
+                        </div>
+
+                    </a>
+                </li>
+            {% empty %}
+                <li>No hay gimnasios que coincidan con la búsqueda.</li>
+            {% endfor %}
+        </ul>
+    </div>
 
 
 {% endblock %}

@@ -8,7 +8,7 @@
                 <h4 class="mb-0">{{ accion }} ejercicio</h4>
             </div>
             <div class="card-body">
-                <form method="post">
+                <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
 
                     {% if form.non_field_errors %}
@@ -33,7 +33,7 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Grupos musculares</label>
-                        <div class="border rounded p-3">
+                        <div class="checkbox-group border rounded p-3" id="grupo-muscular-wrap">
                             {{ form.grupo_muscular }}
                         </div>
                         {% if form.grupo_muscular.errors %}
@@ -49,10 +49,10 @@
                         {% endif %}
                     </div>
                     <div class="mb-3">
-                        <label for="{{ form.video_url.id_for_label }}" class="form-label fw-semibold">Video (YouTube)</label>
-                        {{ form.video_url }}
-                        {% if form.video_url.errors %}
-                            <div class="text-danger small">{{ form.video_url.errors }}</div>
+                        <label for="{{ form.video.id_for_label }}" class="form-label fw-semibold">Video</label>
+                        {{ form.video }}
+                        {% if form.video.errors %}
+                            <div class="text-danger small">{{ form.video.errors }}</div>
                         {% endif %}
                     </div>
 

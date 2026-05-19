@@ -9,7 +9,7 @@ class EjercicioForm(forms.ModelForm):
             'tipo_ejercicio',
             'grupo_muscular',
             'descripcion',
-            'video_url',
+            'video',
         ]
         widgets = {
             'nombre': forms.TextInput(attrs={
@@ -25,8 +25,7 @@ class EjercicioForm(forms.ModelForm):
                 'rows': 4,
                 'placeholder': 'Descripción del ejercicio...'
             }),
-            'video_url': forms.URLInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'URL del video de YouTube (opcional)'
+            'video': forms.FileInput(attrs={
+                'class': 'form-control'
             }),
         }
