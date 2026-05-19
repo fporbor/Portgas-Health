@@ -39,8 +39,8 @@ Aplicación web de salud y fitness desarrollada con **Django 5** y desplegada co
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/portgas-health.git
-cd portgas-health
+git clone https://github.com/fporbor/Portgas-Health.git
+cd Portgas-Health
 ```
 
 ### 2. Configurar las variables de entorno
@@ -105,16 +105,16 @@ portgas-health/
 
 ## 🧩 Aplicaciones Django
 
-### `usuarios`
+### `Usuarios`
 Modelo `Usuario` extendido desde `AbstractUser`. Incluye segundo apellido, teléfono y fecha de nacimiento. También contiene el modelo genérico `Like`, que permite dar like a cualquier otro modelo del proyecto.
 
-### `ejercicios`
+### `Ejercicios`
 Modelo `Ejercicio` con nombre, descripción, tipo de ejercicio (hipertrofia, fuerza, resistencia…), grupo muscular (pecho, espalda, piernas…), vídeo y likes.
 
-### `recetas`
+### `Recetas`
 Modelo `Receta` con nombre, proteínas, calorías, objetivo nutricional, alergias, vídeo y likes.
 
-### `gimnasios`
+### `Gimnasios`
 Modelo `Gimnasio` con nombre, contacto, ubicación (provincia y localidad), enlace web, tipo de gimnasio y foto.
 
 ---
@@ -152,6 +152,12 @@ django-extensions
 ```
 
 ---
+
+## 🛜 Web Desplegada
+
+```
+https://portgas-health-production.up.railway.app/
+```
 
 ## 📄 Licencia
 

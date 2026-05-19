@@ -1,31 +1,24 @@
-document.addEventListener('shown.bs.collapse', function () {
-  initRanges();
+document.addEventListener('DOMContentLoaded', function () {
+
+  function bindRange(minId, maxId, minValId, maxValId, unit) {
+    const minInput = document.getElementById(minId);
+    const maxInput = document.getElementById(maxId);
+    const minSpan  = document.getElementById(minValId);
+    const maxSpan  = document.getElementById(maxValId);
+
+    if (!minInput || !maxInput) return;
+
+    function update() {
+      if (+minInput.value > +maxInput.value) minInput.value = maxInput.value;
+      minSpan.textContent = minInput.value + ' ' + unit;
+      maxSpan.textContent = maxInput.value + ' ' + unit;
+    }
+
+    minInput.addEventListener('input', update);
+    maxInput.addEventListener('input', update);
+  }
+
+  bindRange('calMin', 'calMax', 'calMinValue', 'calMaxValue', 'kcal');
+  bindRange('proMin', 'proMax', 'proMinValue', 'proMaxValue', 'g');
+
 });
-
-function initRanges() {
-  const calMin    = document.getElementById('calMin');
-  const calMax    = document.getElementById('calMax');
-  const calMinVal = document.getElementById('calMinValue');
-  const calMaxVal = document.getElementById('calMaxValue');
-  const proMin    = document.getElementById('proMin');
-  const proMax    = document.getElementById('proMax');
-  const proMinVal = document.getElementById('proMinValue');
-  const proMaxVal = document.getElementById('proMaxValue');
-
-  function updateCal() {
-    if (+calMin.value > +calMax.value) calMin.value = calMax.value;
-    calMinVal.textContent = calMin.value + ' kcal';
-    calMaxVal.textContent = calMax.value + ' kcal';
-  }
-  function updatePro() {
-    if (+proMin.value > +proMax.value) proMin.value = proMax.value;
-    proMinVal.textContent = proMin.value + ' g';
-    proMaxVal.textContent = proMax.value + ' g';
-  }
-
-  calMin.addEventListener('input', updateCal);
-  calMax.addEventListener('input', updateCal);
-  proMin.addEventListener('input', updatePro);
-  proMax.addEventListener('input', updatePro);
-}
-
