@@ -102,7 +102,7 @@
         </div>
         <div class="range-values">
           <span id="calMinValue">{{ request.GET.cal_min|default:0 }} kcal</span>
-          —
+          <span class="sep">—</span>
           <span id="calMaxValue">{{ request.GET.cal_max|default:1500 }} kcal</span>
         </div>
       </div>
@@ -124,7 +124,7 @@
         </div>
         <div class="range-values">
           <span id="proMinValue">{{ request.GET.pro_min|default:0 }} g</span>
-          —
+          <span class="sep">—</span>
           <span id="proMaxValue">{{ request.GET.pro_max|default:200 }} g</span>
         </div>
       </div>
@@ -262,7 +262,7 @@
 {% endif %}
 {% load static %}
 
-<script src="{% static 'app/recetas_filtros.js' %}"></script>
-<script src="{% static 'app/range-sliders.js' %}"></script>
+<script src="{% static 'js/recetas_filtros.js' %}"></script>
+<script src="{% static 'js/range-sliders.js' %}"></script>
 
 {% endblock %}

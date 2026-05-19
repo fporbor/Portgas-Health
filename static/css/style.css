@@ -2109,47 +2109,133 @@ ul li:last-child:first-child {
     width: 100% !important;
 }
 
-.range-row {
-  position: relative;
-  height: 28px;
+/* ── Range sliders ──────────────────────────────────────── */
+.dropdown-range {
   display: flex;
-  align-items: center;
-}
-.range-row input[type="range"] {
-  position: absolute;
-  width: 100%;
-  pointer-events: none;
-  appearance: none;
-  background: transparent;
-  height: 4px;
-}
-.range-row input[type="range"]::-webkit-slider-thumb {
-  pointer-events: all;
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--fire);
-  cursor: pointer;
-  border: 2px solid var(--bg);
-  box-shadow: 0 0 6px var(--fire-glow);
-}
-.range-row input[type="range"]::-webkit-slider-runnable-track {
-  background: var(--border);
-  height: 4px;
-  border-radius: 2px;
-}
-.range-values {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  margin-top: 6px;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.range-row input[type="range"]:first-child {
-  z-index: 3;
+.dropdown-range .collapse {
+  width: 100%;
+  min-width: 200px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1rem 0.75rem;
+  margin-top: 0.5rem !important;
 }
-.range-row input[type="range"]:last-child {
-  z-index: 4;
+
+.range-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.range-row input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 0;          /* el track lo define el pseudo-elemento */
+  outline: none;
+  cursor: pointer;
+  background: transparent;
+  padding: 8px 0;     /* área de clic generosa */
+}
+
+/* ── Track ── */
+.range-row input[type="range"]::-webkit-slider-runnable-track {
+  height: 5px;
+  border-radius: 99px;
+  background: linear-gradient(
+    to right,
+    var(--fire) 0%,
+    var(--fire) var(--fill, 50%),
+    var(--border) var(--fill, 50%),
+    var(--border) 100%
+  );
+  transition: background 0.1s linear;
+}
+
+.range-row input[type="range"]::-moz-range-track {
+  height: 5px;
+  border-radius: 99px;
+  background: var(--border);
+}
+
+.range-row input[type="range"]::-moz-range-progress {
+  height: 5px;
+  border-radius: 99px;
+  background: var(--fire);
+}
+
+/* ── Thumb ── */
+.range-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--ember), var(--fire));
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  box-shadow:
+    0 0 0 3px var(--fire-glow),
+    0 2px 8px rgba(0,0,0,0.5);
+  /* centrado exacto: -(thumbH/2 - trackH/2) */
+  margin-top: calc(-10px + 2.5px);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.range-row input[type="range"]:active::-webkit-slider-thumb,
+.range-row input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.2);
+  box-shadow:
+    0 0 0 5px var(--fire-glow),
+    0 4px 12px rgba(0,0,0,0.6);
+}
+
+.range-row input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--ember), var(--fire));
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 0 3px var(--fire-glow), 0 2px 8px rgba(0,0,0,0.5);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.range-row input[type="range"]:active::-moz-range-thumb,
+.range-row input[type="range"]:hover::-moz-range-thumb {
+  transform: scale(1.2);
+}
+
+/* ── Valores bajo los sliders ── */
+.range-values {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.range-values span {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.15rem 0.55rem;
+  color: var(--ember);
+  font-variant-numeric: tabular-nums;
+  min-width: 5ch;
+  text-align: center;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.range-values .sep {
+  color: var(--text-dim);
+  font-size: 0.7rem;
 }
